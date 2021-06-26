@@ -145,10 +145,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             return;
         }
         mMusicId = intent.getIntExtra(Constants.VIDEO_MUSIC_ID, 0);
-        Log.d(TAG, "mVideoPath=" + mVideoPath);
-        Log.d(TAG, "mVideoPathWater=" + mVideoPathWater);
-        Log.d(TAG, "mSaveType=" + mSaveType);
-        Log.d(TAG, "mMusicId=" + mMusicId);
         mBtnPub = findViewById(R.id.btn_pub);
         mBtnPub.setOnClickListener(this);
         mRecyclerView = findViewById(R.id.recyclerView);
@@ -208,7 +204,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         mPlayer.setVodListener(this);
         mPlayer.setLoop(true);
         int result = mPlayer.startPlay(mVideoPath);
-        Log.d(TAG_NEW, "play result=" + result);
         if (result == 0) {
             mPlayStarted = true;
         }
@@ -256,7 +251,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         //视频的长度
         originalVideoDuration = Long.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
 
-        Log.d(TAG_NEW, "width=" + width + "," + "height=" + height + "," + "rotation=" + rotation + ",originalVideoDuration=" + originalVideoDuration);
         originalVideoWidth = Float.valueOf(width);
         originalVideoHeight = Float.valueOf(height);
         originalVideoHorizontal = originalVideoWidth > originalVideoHeight;
@@ -287,13 +281,11 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         list.add(originalVideoDuration);
         mTxVideoEditer.getThumbnail(list, (int) originalVideoHeight, (int) originalVideoWidth, false, mThumbnailListener);
 
-        Log.d(TAG_NEW, "getThumbnail end");
     }
 
     TXVideoEditer.TXThumbnailListener mThumbnailListener = new TXVideoEditer.TXThumbnailListener() {
         @Override
         public void onThumbnail(int index, long timeMs, final Bitmap bitmap) {
-            Log.d(TAG_NEW, "onThumbnail: index = " + index + ",timeMs:" + timeMs);
             //将缩略图放入图片控件上
             addVideoCover(index, bitmap);
         }
@@ -364,7 +356,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             params.width = (int) (maxHight * ratio);
             params.height = maxHight;
         }
-        Log.d(TAG_NEW, "setVideoSize w=" + params.width + ",h=" + params.height);
+        coverItemWidth = maxWidth / 4;
+        coverItemHeight = params.height / 4;
+
         mTXCloudVideoView.requestLayout();
     }
 
