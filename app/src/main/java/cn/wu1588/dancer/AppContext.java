@@ -11,6 +11,7 @@ import com.mob.MobSDK;
 import com.qiniu.pili.droid.shortvideo.PLShortVideoEnv;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.live.TXLiveBase;
+
 import cn.wu1588.beauty.ui.views.BeautyDataModel;
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.CommonAppContext;
@@ -39,7 +40,7 @@ public class AppContext extends CommonAppContext {
         //腾讯云直播鉴权key
         String liveKey = "826969b36cd7fee009f3d74eb5b6d888";
         //腾讯云视频鉴权url
-        String ugcLicenceUrl ="http://license.vod2.myqcloud.com/license/v1/1ebb5a4157a9a818802d468d603bee65/TXUgcSDK.licence";
+        String ugcLicenceUrl = "http://license.vod2.myqcloud.com/license/v1/1ebb5a4157a9a818802d468d603bee65/TXUgcSDK.licence";
         //腾讯云视频鉴权key
         String ugcKey = "826969b36cd7fee009f3d74eb5b6d888";
         TXLiveBase.getInstance().setLicence(this, liveLicenceUrl, liveKey, ugcLicenceUrl, ugcKey);
@@ -65,6 +66,8 @@ public class AppContext extends CommonAppContext {
 //        }
         PLShortVideoEnv.init(this);
         initAd();
+
+
     }
 
     private void initAd() {
