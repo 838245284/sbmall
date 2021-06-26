@@ -1,0 +1,31 @@
+ext {
+    android = [
+            compileSdkVersion: 28,
+            buildToolsVersion: "28.0.3",
+            minSdkVersion    : 23,
+            targetSdkVersion : 28,
+            versionCode      : 106,
+            versionName      : "6.8.7"
+    ]
+
+    manifestPlaceholders = [
+            serverHost       : "https://ttq.btgoogle.cn/",
+
+            //极光推送 IM
+            jpushAppKey      : "5f004cb3bf71963954187190",
+
+            //腾讯地图
+            txMapAppKey      : "KM4BZ-C7KK2-TWXUH-CHGB6-6ZLXJ-JBF7P",
+            txMapAppSecret   : "XxXDrjBFpgjgOaAnv3olrgvmsS43Nfu5",
+            //腾讯bugly
+            buglyAppId       : "2faff968e6",
+            //百度语音识别
+            baiduAppId       : "24363290",
+            baiduAppKey      : "DLFVb4TGhxUZAPZGUdITb1Rw",
+            baiduAppSecretKey: "ekse89No67UFgeGNKhwEDCQxsGveXW4F",
+            //友盟统计
+            umengAppKey      : "60c4bd21e044530ff0a23a15"
+
+    ]
+
+}
