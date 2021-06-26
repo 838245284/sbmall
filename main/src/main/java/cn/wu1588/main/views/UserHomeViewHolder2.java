@@ -14,6 +14,24 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import net.lucode.hackware.magicindicator.MagicIndicator;
+import net.lucode.hackware.magicindicator.ViewPagerHelper;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.activity.AbsActivity;
@@ -54,23 +72,6 @@ import cn.wu1588.main.activity.UserHomeActivity;
 import cn.wu1588.main.http.MainHttpConsts;
 import cn.wu1588.main.http.MainHttpUtil;
 import cn.wu1588.mall.activity.ShopHomeActivity;
-
-import net.lucode.hackware.magicindicator.MagicIndicator;
-import net.lucode.hackware.magicindicator.ViewPagerHelper;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.indicators.LinePagerIndicator;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView;
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -267,9 +268,9 @@ public class UserHomeViewHolder2 extends AbsLivePageViewHolder implements LiveSh
                 }  else if (index == 1) {
                     mChangCountTextView = simplePagerTitleView;
                 } else if (index == 2) {
-                    mLiveCountTextView = simplePagerTitleView;
-                } else if (index == 3) {
                     mJiaoCountTextView = simplePagerTitleView;
+                } else if (index == 3) {
+                    mActiveCountTextView = simplePagerTitleView;
                 } else if (index == 4) {
                     mLiveCountTextView = simplePagerTitleView;
                 }
