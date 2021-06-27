@@ -32,6 +32,7 @@ public class VideoHttpConsts {
     public static final String VIDEO_DELETE = "videoDelete";
     public static final String SET_VIDEO_SHARE = "setVideoShare";
     public static final String VIDEO_WATCH_START = "videoWatchStart";
+    public static final String VIDEO_WATCH_START_USER = "videoWatchStartUser";
     public static final String VIDEO_WATCH_END = "videoWatchEnd";
     public static final String GET_CONCAT_GOODS = "getConcatGoods";
     public static final String START_WATCH_VIDEO = "startWatchVideo";

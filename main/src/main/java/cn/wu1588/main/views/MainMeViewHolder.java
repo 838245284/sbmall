@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.HtmlConfig;
 import cn.wu1588.common.activity.WebViewActivity;
@@ -39,8 +41,6 @@ import cn.wu1588.main.http.MainHttpUtil;
 import cn.wu1588.mall.activity.GoodsCollectActivity;
 import cn.wu1588.mall.activity.PayContentActivity1;
 import cn.wu1588.mall.activity.PayContentActivity2;
-
-import java.util.List;
 
 /**
  * Created by cxf on 2018/9/22.
@@ -94,6 +94,7 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
         findViewById(R.id.my_risk).setOnClickListener(this);
         findViewById(R.id.pay_content).setOnClickListener(this);
         findViewById(R.id.my_xiaodian).setOnClickListener(this);
+        findViewById(R.id.buycenter).setOnClickListener(this);
         findViewById(R.id.room_manage).setOnClickListener(this);
         findViewById(R.id.zhuangbeicenter).setOnClickListener(this);
         findViewById(R.id.mylevel).setOnClickListener(this);
@@ -167,52 +168,6 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
 
     @Override
     public void onItemClick(UserItemBean bean, int position) {
-        if (bean.getId() == 22) {//我的小店
-            forwardMall();
-            return;
-        } else if (bean.getId() == 24) {//付费内容
-            forwardPayContent();
-            return;
-        }
-        String url = bean.getHref();
-        if (TextUtils.isEmpty(url)) {
-            switch (bean.getId()) {
-                case 1:
-                    forwardProfit();
-                    break;
-                case 2:
-                    forwardCoin();
-                    break;
-                case 13:
-                    forwardSetting();
-                    break;
-                case 19:
-                    forwardMyVideo();
-                    break;
-                case 20:
-                    forwardRoomManage();
-                    break;
-                case 23://我的动态
-                    ((MainActivity)mContext).getLocation();
-                    mContext.startActivity(new Intent(mContext, MyActiveActivity.class));
-                    break;
-                case 25://每日任务
-                    mContext.startActivity(new Intent(mContext, DailyTaskActivity.class));
-                    break;
-                case 26://我的收藏
-                    mContext.startActivity(new Intent(mContext, GoodsCollectActivity.class));
-                    break;
-            }
-        } else {
-            if (!url.contains("?")) {
-                url = StringUtil.contact(url, "?");
-            }
-            if (bean.getId() == 8) {//三级分销
-                ThreeDistributActivity.forward(mContext, bean.getName(), url);
-            } else {
-                WebViewActivity.forward(mContext, url);
-            }
-        }
     }
 
     private void toWeb(int id){
@@ -241,14 +196,19 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
      * 我的小店 商城
      */
     private void forwardMall() {
-        UserBean u = CommonAppConfig.getInstance().getUserBean();
+        RouteUtil.forward(RouteUtil.PATH_MALL_BUYER);
+    }
+
+    private void forwardSell() {
+        RouteUtil.forward(RouteUtil.PATH_MALL_SELLER);
+       /* UserBean u = CommonAppConfig.getInstance().getUserBean();
         if (u != null) {
             if (u.getIsOpenShop() == 0) {
-                RouteUtil.forward(RouteUtil.PATH_MALL_BUYER);
+
             } else {
                 RouteUtil.forward(RouteUtil.PATH_MALL_SELLER);
             }
-        }
+        }*/
 
     }
 
@@ -300,7 +260,7 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
         }else if(i == R.id.pay_content){
             forwardPayContent();
         }else if(i == R.id.my_xiaodian){
-            forwardMall();
+            forwardSell();
         }else if(i == R.id.room_manage){
             forwardRoomManage();
         }else if(i == R.id.zhuangbeicenter){
@@ -311,6 +271,8 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
             toWeb(8);
         }else if(i == R.id.person_setting){
             forwardSetting();
+        }else if(i == R.id.buycenter){
+            forwardMall();
         }
     }
 

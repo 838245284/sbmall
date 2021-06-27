@@ -427,6 +427,22 @@ public class VideoHttpUtil {
                 .execute(CommonHttpUtil.NO_CALLBACK);
     }
 
+    public static void videoWatchUserStart(String videoUid, String videoId,HttpCallback callback) {
+        String uid = CommonAppConfig.getInstance().getUid();
+        if (TextUtils.isEmpty(uid) || uid.equals(videoUid)) {
+            return;
+        }
+        VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_START);
+        String s = MD5Util.getMD5(uid + "-" + videoId + "-" + VIDEO_SALT);
+        HttpClient.getInstance().get("Video.getVideoUser", VideoHttpConsts.VIDEO_WATCH_START_USER)
+                .params("uid", uid)
+                .params("token", CommonAppConfig.getInstance().getToken())
+                .params("videoid", videoId)
+                .params("video_uid", videoUid)
+                .params("random_str", s)
+                .execute(callback);
+    }
+
 
     /**
      * 完整观看完视频后请求这个接口
