@@ -12,8 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -28,7 +30,9 @@ import com.tencent.rtmp.TXLivePlayer;
 import com.tencent.rtmp.TXVodPlayConfig;
 import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
+import com.tencent.ugc.TXVideoEditConstants;
 import com.tencent.ugc.TXVideoEditer;
+import com.tencent.ugc.TXVideoInfoReader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,6 +88,7 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
     private boolean originalVideoHorizontal;
     private VideoCoverAdapter mVideoCoverAdapter;
     private RecyclerView mRecyclerCover;
+    private String mWaterPath;
 
     public static void forward(Context context, String videoPath, String videoWaterPath, int saveType, int musicId) {
         Intent intent = new Intent(context, VideoPublishActivity.class);
@@ -95,7 +100,7 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
     }
 
     private static final String TAG = "VideoPublishActivity";
-    private static final String TAG_NEW = "视频发布";
+    private static final String TAG_NEW = "视频发布Test";
     private static final int REQ_CODE_GOODS = 100;
     private static final int REQ_CODE_CLASS = 101;
     private TextView mNum;
@@ -145,6 +150,7 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             return;
         }
         mMusicId = intent.getIntExtra(Constants.VIDEO_MUSIC_ID, 0);
+        Log.d(TAG_NEW, "mVideoPath=" + mVideoPath + ",mVideoPathWater=" + mVideoPathWater + ",mSaveType=" + mSaveType + ",mMusicId=" + mMusicId);
         mBtnPub = findViewById(R.id.btn_pub);
         mBtnPub.setOnClickListener(this);
         mRecyclerView = findViewById(R.id.recyclerView);
@@ -278,8 +284,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             list.add(time);
             time = time + timeItem;
         }
-        list.add(originalVideoDuration);
-        mTxVideoEditer.getThumbnail(list, (int) originalVideoHeight, (int) originalVideoWidth, false, mThumbnailListener);
+//        list.add(originalVideoDuration);
+        mTxVideoEditer.getThumbnail(list, (int) coverItemWidth, (int) coverItemHeight, false, mThumbnailListener);
+//        mTxVideoEditer.getThumbnail(list, (int) originalVideoHeight, (int) originalVideoWidth, false, mThumbnailListener);
 
     }
 
@@ -351,13 +358,20 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             // 横屏
             params.width = FrameLayout.LayoutParams.MATCH_PARENT;
             params.height = (int) (maxWidth / ratio);
+            coverItemWidth = maxWidth / 4;
+            coverItemHeight = params.height / 4;
         } else {
             // 竖屏
             params.width = (int) (maxHight * ratio);
             params.height = maxHight;
+
+            coverItemWidth = params.width / 2;
+            coverItemHeight = params.height / 2;
         }
-        coverItemWidth = maxWidth / 4;
-        coverItemHeight = params.height / 4;
+
+        ViewGroup.LayoutParams layoutParams = mRecyclerCover.getLayoutParams();
+        layoutParams.height = (int) coverItemHeight;
+        mRecyclerCover.setLayoutParams(layoutParams);
 
         mTXCloudVideoView.requestLayout();
     }
@@ -600,7 +614,8 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
                     }
                     break;
                 case REQUEST_CODE_VIDEO:
-                    String mVideoPath = intent.getStringExtra(Constants.VIDEO_PATH);Long mDuration = intent.getLongExtra(Constants.VIDEO_DURATION, 0);
+                    String mVideoPath = intent.getStringExtra(Constants.VIDEO_PATH);
+                    Long mDuration = intent.getLongExtra(Constants.VIDEO_DURATION, 0);
                     VideoEditActivity.forward(this, mDuration, mVideoPath, false, false);
                     finish();
                     break;

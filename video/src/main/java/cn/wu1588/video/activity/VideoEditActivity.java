@@ -65,6 +65,7 @@ public class VideoEditActivity extends AbsActivity implements
     private static final int STATUS_PLAY = 1;
     private static final int STATUS_PAUSE = 2;
     private static final int STATUS_PREVIEW_AT_TIME = 3;
+    private TXVideoEditConstants.TXVideoInfo mVideoInfo;
 
     public static void forward(Context context, long videoDuration, String videoPath, boolean fromRecord, boolean hasOriginBgm) {
         Intent intent = new Intent(context, VideoEditActivity.class);
@@ -109,6 +110,7 @@ public class VideoEditActivity extends AbsActivity implements
     private boolean mUseWaterMark;
     private int mGenerateProgress;//生成视频的进度
     private boolean mIsGenerateComplete;//生成视频结束
+    private int mMaxBitRate = 2500;
 
 
     @Override
@@ -633,6 +635,15 @@ public class VideoEditActivity extends AbsActivity implements
         if (mVideoEditer == null) {
             return;
         }
+
+//        if (mVideoInfo != null) {
+//            Log.d("视频发布Test", "视频码率=" + mVideoInfo.bitrate);
+//            if (mVideoInfo.bitrate > mMaxBitRate) {
+//                Log.d("视频发布Test", "设置视频码率 66666666");
+//                mVideoEditer.setVideoBitrate(mMaxBitRate);
+//            }
+//        }
+
         if (mUseWaterMark) {
             getWaterMark(new CommonCallback<Bitmap>() {
                 @Override
@@ -872,9 +883,9 @@ public class VideoEditActivity extends AbsActivity implements
             @Override
             public void run() {
                 try {
-                    TXVideoEditConstants.TXVideoInfo info = TXVideoInfoReader.getInstance().getVideoFileInfo(mOriginVideoPath);
+                    mVideoInfo = TXVideoInfoReader.getInstance().getVideoFileInfo(mOriginVideoPath);
                     if (mHandler != null) {
-                        if (info == null) {
+                        if (mVideoInfo == null) {
                             mHandler.sendEmptyMessage(MyHandler.ERROR);
                         } else {
                             mHandler.sendEmptyMessage(MyHandler.SUCCESS);
@@ -903,6 +914,7 @@ public class VideoEditActivity extends AbsActivity implements
                 thumbnail.height = 100;
                 mVideoEditer.setThumbnail(thumbnail);
                 mVideoEditer.processVideo();
+
             }
         } catch (Exception e) {
             e.printStackTrace();

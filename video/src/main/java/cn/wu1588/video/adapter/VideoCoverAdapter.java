@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,12 +102,12 @@ public class VideoCoverAdapter extends RecyclerView.Adapter<VideoCoverAdapter.Vh
 
 //            mIcon.setLayoutParams(new FrameLayout.LayoutParams(bean.getWidth(), bean.getHight()));
 //            ImgLoader.display(mContext, bean.getBitmap(), mIcon);
-            mIcon.setImageBitmap(bean.getBitmap());
-//            Glide.with(mContext)
-//                    .load(bean.getBitmap())
-//                    .override(bean.getWidth(), bean.getHight())
-//                    .into(mIcon);
-
+//            mIcon.setImageBitmap(bean.getBitmap());
+            Glide.with(mContext)
+                    .load(bean.getBitmap())
+                    .override(bean.getWidth(), bean.getHight())
+                    .into(mIcon);
+//
         }
     }
 
