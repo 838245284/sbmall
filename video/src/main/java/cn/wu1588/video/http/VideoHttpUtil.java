@@ -263,6 +263,17 @@ public class VideoHttpUtil {
 
 
     /**
+     * 获取视频码率
+     */
+
+    public static void getVidoeBitRate(HttpCallback callback) {
+        HttpClient.getInstance().get("Home.query_option", VideoHttpConsts.GET_VIDOE_BITRATE)
+                .params("option_name", "transcoding")
+                .execute(callback);
+    }
+
+
+    /**
      * 短视频上传信息
      *
      * @param title   短视频标题

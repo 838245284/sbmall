@@ -24,6 +24,7 @@ public class VideoHttpConsts {
     public static final String VIDEO_SEARCH_MUSIC = "videoSearchMusic";
     public static final String GET_QI_NIU_TOKEN = "getQiNiuToken";
     public static final String SAVE_UPLOAD_VIDEO_INFO = "saveUploadVideoInfo";
+    public static final String GET_VIDOE_BITRATE = "getVidoeBitRate";
     public static final String GET_HOME_VIDEO = "getHomeVideo";
     public static final String GET_MY_VIDEO = "getMyVideo";
     public static final String GET_VIDEO_REPORT_LIST = "getVideoReportList";

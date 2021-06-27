@@ -88,7 +88,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
     private boolean originalVideoHorizontal;
     private VideoCoverAdapter mVideoCoverAdapter;
     private RecyclerView mRecyclerCover;
-    private String mWaterPath;
 
     public static void forward(Context context, String videoPath, String videoWaterPath, int saveType, int musicId) {
         Intent intent = new Intent(context, VideoPublishActivity.class);
@@ -240,6 +239,20 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         initVideoParameter();
         setVideoSize(originalVideoWidth, originalVideoHeight);
         getVideoThumbnailList();
+        logBitRate();
+    }
+
+    private void logBitRate() {
+        new Thread(){
+            @Override
+            public void run() {
+                TXVideoEditConstants.TXVideoInfo videoFileInfo = TXVideoInfoReader.getInstance().getVideoFileInfo(mVideoPath);
+                Log.d("视频发布Test", "logBitRate 视频码率=" + videoFileInfo.bitrate);
+
+            }
+        }.start();
+
+
     }
 
 
@@ -510,6 +523,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         if (mMobShareUtil != null) {
             mMobShareUtil.release();
         }
+        if (mTxVideoEditer != null) {
+            mTxVideoEditer.release();
+        }
         mPlayer = null;
         mUploadStrategy = null;
         mMobShareUtil = null;
@@ -565,6 +581,8 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             startActivityForResult(intent, REQUEST_CODE_VIDEO);
         } else if (i == R.id.btn_upload_cover) {
             ToastUtil.show(R.string.video_upload_success);
+
+
         } else if (i == R.id.btn_capture_cover) {
             mPlayer.snapshot(new TXLivePlayer.ITXSnapshotListener() {
                 @Override
