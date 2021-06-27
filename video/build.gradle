@@ -42,8 +42,5 @@ dependencies {
 
     implementation 'com.shuyu:GSYVideoPlayer:6.0.3'
 
-
-
-
     implementation 'com.pangle.cn:ads-sdk:3.5.0.6'
 }

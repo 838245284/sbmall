@@ -215,6 +215,8 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
 
 
         }, 5000);
+
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

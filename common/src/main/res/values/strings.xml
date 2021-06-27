@@ -732,6 +732,7 @@
     <string name="video_all_class">所有分类</string>
     <string name="video_choose_class">选择视频分类</string>
     <string name="video_choose_class_2">请选择视频分类</string>
+    <string name="video_upload_success">上传封面成功</string>
     <string name="live_gift_dao_tip">发送了%1$s道具礼物</string>
     <string name="next2">下一个</string>
     <string name="live_room_type_pwd">本房间为密码房间，请输入密码</string>

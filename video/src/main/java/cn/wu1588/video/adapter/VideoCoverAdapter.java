@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wu1588.common.Constants;
-import cn.wu1588.common.glide.ImgLoader;
 import cn.wu1588.common.mob.CoverBean;
 import cn.wu1588.video.R;
 
@@ -46,19 +46,13 @@ public class VideoCoverAdapter extends RecyclerView.Adapter<VideoCoverAdapter.Vh
                     return;
                 }
                 int position = (int) tag;
-                if (position == mCheckedPosition) {
-                    mList.get(position).setChecked(false);
-                    notifyItemChanged(mCheckedPosition, Constants.PAYLOAD);
-                    mCheckedPosition = -1;
-                    return;
+                for (CoverBean coverBean : mList) {
+                    coverBean.setChecked(false);
                 }
-                if (mCheckedPosition >= 0 && mCheckedPosition < mList.size()) {
-                    mList.get(mCheckedPosition).setChecked(false);
-                    notifyItemChanged(mCheckedPosition, Constants.PAYLOAD);
-                }
+
                 CoverBean bean = mList.get(position);
                 bean.setChecked(true);
-                notifyItemChanged(position, Constants.PAYLOAD);
+                notifyDataSetChanged();
                 mCheckedPosition = position;
             }
         };
@@ -101,7 +95,19 @@ public class VideoCoverAdapter extends RecyclerView.Adapter<VideoCoverAdapter.Vh
         void setData(CoverBean bean, int position) {
             itemView.setTag(position);
             mCheck.setVisibility(bean.isChecked() ? View.VISIBLE : View.GONE);
-            ImgLoader.display(mContext, bean.getBitmap(), mIcon);
+//            ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
+//            layoutParams.width = bean.getWidth();
+//            layoutParams.height = bean.getHight();
+//            itemView.setLayoutParams(layoutParams);
+
+//            mIcon.setLayoutParams(new FrameLayout.LayoutParams(bean.getWidth(), bean.getHight()));
+//            ImgLoader.display(mContext, bean.getBitmap(), mIcon);
+//            mIcon.setImageBitmap(bean.getBitmap());
+            Glide.with(mContext)
+                    .load(bean.getBitmap())
+                    .override(bean.getWidth(), bean.getHight())
+                    .into(mIcon);
+//
         }
     }
 

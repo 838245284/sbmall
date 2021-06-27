@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -24,10 +26,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tencent.rtmp.ITXVodPlayListener;
 import com.tencent.rtmp.TXLiveConstants;
+import com.tencent.rtmp.TXLivePlayer;
 import com.tencent.rtmp.TXVodPlayConfig;
 import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
+import com.tencent.ugc.TXVideoEditConstants;
 import com.tencent.ugc.TXVideoEditer;
+import com.tencent.ugc.TXVideoInfoReader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,9 +76,13 @@ import top.zibin.luban.OnRenameListener;
  */
 
 public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListener, View.OnClickListener {
+    private static final int MAX_DURATION = 15000;//最大录制时间15s
+    private static final int REQUEST_CODE_VIDEO = 123;//选择视频
 
     private float originalVideoWidth;
     private float originalVideoHeight;
+    private float coverItemWidth;
+    private float coverItemHeight;
     private long originalVideoDuration;
     private TXVideoEditer mTxVideoEditer;
     private boolean originalVideoHorizontal;
@@ -90,7 +99,7 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
     }
 
     private static final String TAG = "VideoPublishActivity";
-    private static final String TAG_NEW = "视频发布";
+    private static final String TAG_NEW = "视频发布Test";
     private static final int REQ_CODE_GOODS = 100;
     private static final int REQ_CODE_CLASS = 101;
     private TextView mNum;
@@ -140,10 +149,7 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             return;
         }
         mMusicId = intent.getIntExtra(Constants.VIDEO_MUSIC_ID, 0);
-        Log.d(TAG, "mVideoPath=" + mVideoPath);
-        Log.d(TAG, "mVideoPathWater=" + mVideoPathWater);
-        Log.d(TAG, "mSaveType=" + mSaveType);
-        Log.d(TAG, "mMusicId=" + mMusicId);
+        Log.d(TAG_NEW, "mVideoPath=" + mVideoPath + ",mVideoPathWater=" + mVideoPathWater + ",mSaveType=" + mSaveType + ",mMusicId=" + mMusicId);
         mBtnPub = findViewById(R.id.btn_pub);
         mBtnPub.setOnClickListener(this);
         mRecyclerView = findViewById(R.id.recyclerView);
@@ -195,12 +201,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
 
         mTXCloudVideoView = findViewById(R.id.video_view);
         mPlayer = new TXVodPlayer(mContext);
-//        mPlayer.snapshot(new TXLivePlayer.ITXSnapshotListener() {
-//            @Override
-//            public void onSnapshot(Bitmap bitmap) {
-//
-//            }
-//        });
         mPlayer.setConfig(new TXVodPlayConfig());
         mPlayer.setPlayerView(mTXCloudVideoView);
         mPlayer.enableHardwareDecode(false);
@@ -209,7 +209,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         mPlayer.setVodListener(this);
         mPlayer.setLoop(true);
         int result = mPlayer.startPlay(mVideoPath);
-        Log.d(TAG_NEW, "play result=" + result);
         if (result == 0) {
             mPlayStarted = true;
         }
@@ -234,6 +233,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             }
         });
 
+        findViewById(R.id.btn_reset_video).setOnClickListener(this);
+        findViewById(R.id.btn_upload_cover).setOnClickListener(this);
+        findViewById(R.id.btn_capture_cover).setOnClickListener(this);
         initVideoParameter();
         setVideoSize(originalVideoWidth, originalVideoHeight);
         getVideoThumbnailList();
@@ -254,7 +256,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         //视频的长度
         originalVideoDuration = Long.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
 
-        Log.d(TAG_NEW, "width=" + width + "," + "height=" + height + "," + "rotation=" + rotation + ",originalVideoDuration=" + originalVideoDuration);
         originalVideoWidth = Float.valueOf(width);
         originalVideoHeight = Float.valueOf(height);
         originalVideoHorizontal = originalVideoWidth > originalVideoHeight;
@@ -282,23 +283,61 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             list.add(time);
             time = time + timeItem;
         }
-        list.add(originalVideoDuration);
-        mTxVideoEditer.getThumbnail(list, (int) originalVideoHeight, (int) originalVideoWidth, false, mThumbnailListener);
+//        list.add(originalVideoDuration);
+        mTxVideoEditer.getThumbnail(list, (int) coverItemWidth, (int) coverItemHeight, false, mThumbnailListener);
+//        mTxVideoEditer.getThumbnail(list, (int) originalVideoHeight, (int) originalVideoWidth, false, mThumbnailListener);
 
-        Log.d(TAG_NEW, "getThumbnail end");
     }
 
     TXVideoEditer.TXThumbnailListener mThumbnailListener = new TXVideoEditer.TXThumbnailListener() {
         @Override
         public void onThumbnail(int index, long timeMs, final Bitmap bitmap) {
-            Log.d(TAG_NEW, "onThumbnail: index = " + index + ",timeMs:" + timeMs);
             //将缩略图放入图片控件上
-            CoverBean bean = new CoverBean();
-            bean.setBitmap(bitmap);
-            bean.setChecked(index == 0);
-            mVideoCoverAdapter.getList().add(bean);
+            addVideoCover(index, bitmap);
         }
     };
+
+    private void addVideoCover(int index, Bitmap bitmap) {
+        CoverBean bean = new CoverBean();
+        bean.setWidth((int) coverItemWidth);
+        bean.setWidth((int) coverItemHeight);
+//        bean.setBitmap(Bitmap.createScaledBitmap(bitmap, bean.getWidth(), bean.getHight(), true));
+//        bean.setBitmap(setBitmapSize(bitmap, bean.getWidth(), bean.getHight()));
+        bean.setBitmap(bitmap);
+        if (index == 0 && !mVideoCoverAdapter.getList().isEmpty()) {
+            for (CoverBean coverBean : mVideoCoverAdapter.getList()) {
+                coverBean.setChecked(false);
+            }
+            mVideoCoverAdapter.getList().add(0, bean);
+        } else {
+            mVideoCoverAdapter.getList().add(bean);
+        }
+        bean.setChecked(index == 0);
+        mRecyclerCover.post(new Runnable() {
+            @Override
+            public void run() {
+                mVideoCoverAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+
+    private Bitmap setBitmapSize(Bitmap bitmap, int newWidth, int newHeight) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        //计算压缩的比率
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+        //获取想要缩放的matrix
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        //获取新的bitmap
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+        return bitmap;
+    }
 
     /**
      * 设置视频大小
@@ -312,18 +351,92 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         int maxHight = DensityUtils.dip2px(mContext, 200);
         float ratio = videoWidth / videoHeight;
 
+
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mTXCloudVideoView.getLayoutParams();
         if (originalVideoHorizontal) {
             // 横屏
             params.width = FrameLayout.LayoutParams.MATCH_PARENT;
             params.height = (int) (maxWidth / ratio);
+            coverItemWidth = maxWidth / 4;
+            coverItemHeight = params.height / 4;
         } else {
             // 竖屏
             params.width = (int) (maxHight * ratio);
             params.height = maxHight;
+
+            coverItemWidth = params.width / 2;
+            coverItemHeight = params.height / 2;
         }
-        Log.d(TAG_NEW, "setVideoSize w=" + params.width + ",h=" + params.height);
+
+        ViewGroup.LayoutParams layoutParams = mRecyclerCover.getLayoutParams();
+        layoutParams.height = (int) coverItemHeight;
+        mRecyclerCover.setLayoutParams(layoutParams);
+
         mTXCloudVideoView.requestLayout();
+    }
+
+    private void uploadCover(Bitmap bitmap) {
+        final String coverImagePath = mVideoPath.replace(".mp4", ".jpg");
+        File imageFile = new File(coverImagePath);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            imageFile = null;
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (bitmap != null) {
+            bitmap.recycle();
+        }
+        if (imageFile == null) {
+            ToastUtil.show(R.string.video_cover_img_failed);
+            onFailed();
+            return;
+        }
+        final File finalImageFile = imageFile;
+        //用鲁班压缩图片
+        Luban.with(this)
+                .load(finalImageFile)
+                .setFocusAlpha(false)
+                .ignoreBy(8)//8k以下不压缩
+                .setTargetDir(CommonAppConfig.VIDEO_PATH)
+                .setRenameListener(new OnRenameListener() {
+                    @Override
+                    public String rename(String filePath) {
+                        filePath = filePath.substring(filePath.lastIndexOf("/") + 1);
+                        return filePath.replace(".jpg", "_c.jpg");
+                    }
+                })
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        if (!finalImageFile.getAbsolutePath().equals(file.getAbsolutePath()) && finalImageFile.exists()) {
+                            finalImageFile.delete();
+                        }
+                        uploadVideoFile(file);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        uploadVideoFile(finalImageFile);
+                    }
+                }).launch();
     }
 
     @Override
@@ -396,6 +509,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         if (mMobShareUtil != null) {
             mMobShareUtil.release();
         }
+        if (mTxVideoEditer != null) {
+            mTxVideoEditer.release();
+        }
         mPlayer = null;
         mUploadStrategy = null;
         mMobShareUtil = null;
@@ -445,6 +561,21 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             RouteUtil.searchMallGoods(this, REQ_CODE_GOODS);
         } else if (i == R.id.btn_video_class) {
             chooseVideoClass();
+        } else if (i == R.id.btn_reset_video) {
+            Intent intent = new Intent(mContext, VideoChooseActivity.class);
+            intent.putExtra(Constants.VIDEO_DURATION, MAX_DURATION);
+            startActivityForResult(intent, REQUEST_CODE_VIDEO);
+        } else if (i == R.id.btn_upload_cover) {
+            ToastUtil.show(R.string.video_upload_success);
+
+
+        } else if (i == R.id.btn_capture_cover) {
+            mPlayer.snapshot(new TXLivePlayer.ITXSnapshotListener() {
+                @Override
+                public void onSnapshot(Bitmap bitmap) {
+                    addVideoCover(0, bitmap);
+                }
+            });
         }
     }
 
@@ -486,6 +617,12 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
                         mVideoClassName.setText(intent.getStringExtra(Constants.CLASS_NAME));
                     }
                     break;
+                case REQUEST_CODE_VIDEO:
+                    String mVideoPath = intent.getStringExtra(Constants.VIDEO_PATH);
+                    Long mDuration = intent.getLongExtra(Constants.VIDEO_DURATION, 0);
+                    VideoEditActivity.forward(this, mDuration, mVideoPath, false, false);
+                    finish();
+                    break;
             }
         }
     }
@@ -506,45 +643,50 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         mVideoTitle = mInput.getText().toString().trim();
         mLoading = DialogUitl.loadingDialog(mContext, WordUtil.getString(R.string.video_pub_ing));
         mLoading.show();
-        mVideoRatio = 0;
+        mVideoRatio = originalVideoHeight / originalVideoWidth;
         Bitmap bitmap = null;
-        //生成视频封面图
-        MediaMetadataRetriever mmr = null;
-        try {
-            mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(mVideoPath);
-            bitmap = mmr.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST);
-            String width = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);//宽
-            String height = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);//高
-            String rotation = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-            double videoWidth = 0;
-            double videoHeight = 0;
-            if ("0".equals(rotation)) {
-                if (!TextUtils.isEmpty(width)) {
-                    videoWidth = Double.parseDouble(width);
-                }
-                if (!TextUtils.isEmpty(height)) {
-                    videoHeight = Double.parseDouble(height);
-                }
-            } else {
-                if (!TextUtils.isEmpty(height)) {
-                    videoWidth = Double.parseDouble(height);
-                }
-                if (!TextUtils.isEmpty(width)) {
-                    videoHeight = Double.parseDouble(width);
-                }
-            }
-            if (videoHeight != 0 && videoWidth != 0) {
-                mVideoRatio = videoHeight / videoWidth;
-            }
-        } catch (Exception e) {
-            bitmap = null;
-            e.printStackTrace();
-        } finally {
-            if (mmr != null) {
-                mmr.release();
-            }
+        for (CoverBean coverBean : mVideoCoverAdapter.getList()) {
+            if (coverBean.isChecked())
+                bitmap = coverBean.getBitmap();
         }
+//        Bitmap bitmap = null;
+//        //生成视频封面图
+//        MediaMetadataRetriever mmr = null;
+//        try {
+//            mmr = new MediaMetadataRetriever();
+//            mmr.setDataSource(mVideoPath);
+//            bitmap = mmr.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST);
+//            String width = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);//宽
+//            String height = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);//高
+//            String rotation = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+//            double videoWidth = 0;
+//            double videoHeight = 0;
+//            if ("0".equals(rotation)) {
+//                if (!TextUtils.isEmpty(width)) {
+//                    videoWidth = Double.parseDouble(width);
+//                }
+//                if (!TextUtils.isEmpty(height)) {
+//                    videoHeight = Double.parseDouble(height);
+//                }
+//            } else {
+//                if (!TextUtils.isEmpty(height)) {
+//                    videoWidth = Double.parseDouble(height);
+//                }
+//                if (!TextUtils.isEmpty(width)) {
+//                    videoHeight = Double.parseDouble(width);
+//                }
+//            }
+//            if (videoHeight != 0 && videoWidth != 0) {
+//                mVideoRatio = videoHeight / videoWidth;
+//            }
+//        } catch (Exception e) {
+//            bitmap = null;
+//            e.printStackTrace();
+//        } finally {
+//            if (mmr != null) {
+//                mmr.release();
+//            }
+//        }
         if (bitmap == null) {
             ToastUtil.show(R.string.video_cover_img_failed);
             onFailed();
@@ -670,6 +812,8 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
                 mVideoClassId,
                 mGoodsType,
                 mVideoRatio,
+                mCheckBoxOriginal.isChecked(),
+                mCheckBoxTeachingl.isChecked(),
                 new HttpCallback() {
                     @Override
                     public void onSuccess(int code, String msg, String[] info) {

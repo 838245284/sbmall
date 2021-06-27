@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.http.CommonHttpUtil;
 import cn.wu1588.common.http.HttpCallback;
@@ -47,6 +48,7 @@ public class VideoHttpUtil {
                 .params("p", p)
                 .execute(callback);
     }
+
     /**
      * 获取教学推荐列表
      */
@@ -83,6 +85,7 @@ public class VideoHttpUtil {
                 .params("p", p)
                 .execute(callback);
     }
+
     /**
      * 获取首页关注视频列表
      */
@@ -118,6 +121,7 @@ public class VideoHttpUtil {
                 .params("videoid", videoid)
                 .execute(callback);
     }
+
     /**
      * 视频收藏
      */
@@ -259,6 +263,17 @@ public class VideoHttpUtil {
 
 
     /**
+     * 获取视频码率
+     */
+
+    public static void getVidoeBitRate(HttpCallback callback) {
+        HttpClient.getInstance().get("Home.query_option", VideoHttpConsts.GET_VIDOE_BITRATE)
+                .params("option_name", "transcoding")
+                .execute(callback);
+    }
+
+
+    /**
      * 短视频上传信息
      *
      * @param title   短视频标题
@@ -278,6 +293,8 @@ public class VideoHttpUtil {
             int videoClassId,
             int type,
             double videoRatio,
+            boolean isOriginal,
+            boolean isTeaching,
             HttpCallback callback) {
         HttpClient.getInstance().get("Video.setVideo", VideoHttpConsts.SAVE_UPLOAD_VIDEO_INFO)
                 .params("uid", CommonAppConfig.getInstance().getUid())
@@ -294,7 +311,10 @@ public class VideoHttpUtil {
                 .params("classid", videoClassId)
                 .params("classid", videoClassId)
                 .params("type", type)
-                .params("anyway", videoRatio == 0 ? "1.778" : String.format("%.3f", videoRatio))
+                .params("is_yc", isOriginal ? 1 : 2)
+                .params("is_jx", isTeaching ? 1 : 2)
+                .params("anyway", (float) videoRatio)
+//                .params("anyway", videoRatio == 0 ? "1.778" : String.format("%.3f", videoRatio))
                 .execute(callback);
     }
 
@@ -309,7 +329,7 @@ public class VideoHttpUtil {
     /**
      * 获取某人发布的视频
      */
-    public static void getHomeVideo(String toUid, int p,int classid, HttpCallback callback) {
+    public static void getHomeVideo(String toUid, int p, int classid, HttpCallback callback) {
         HttpClient.getInstance().get("Video.getHomeVideos", VideoHttpConsts.GET_HOME_VIDEO)
                 .params("uid", CommonAppConfig.getInstance().getUid())
                 .params("token", CommonAppConfig.getInstance().getToken())
@@ -322,7 +342,7 @@ public class VideoHttpUtil {
     /**
      * 获取我发布的视频
      */
-    public static void getMyVideo(String toUid, int p,int classid, HttpCallback callback) {
+    public static void getMyVideo(String toUid, int p, int classid, HttpCallback callback) {
         HttpClient.getInstance().get("Video.GetMyVideos", VideoHttpConsts.GET_MY_VIDEO)
                 .params("uid", CommonAppConfig.getInstance().getUid())
                 .params("token", CommonAppConfig.getInstance().getToken())

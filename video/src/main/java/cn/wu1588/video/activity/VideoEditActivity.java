@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.tencent.ugc.TXVideoEditConstants;
 import com.tencent.ugc.TXVideoEditer;
 import com.tencent.ugc.TXVideoInfoReader;
@@ -25,11 +27,13 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.activity.AbsActivity;
 import cn.wu1588.common.bean.ConfigBean;
+import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.interfaces.CommonCallback;
 import cn.wu1588.common.utils.BitmapUtil;
 import cn.wu1588.common.utils.DialogUitl;
@@ -41,6 +45,8 @@ import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
 import cn.wu1588.video.R;
 import cn.wu1588.video.bean.MusicBean;
+import cn.wu1588.video.http.VideoHttpConsts;
+import cn.wu1588.video.http.VideoHttpUtil;
 import cn.wu1588.video.utils.VideoLocalUtil;
 import cn.wu1588.video.views.VideoEditCutViewHolder;
 import cn.wu1588.video.views.VideoEditFilterViewHolder;
@@ -65,6 +71,7 @@ public class VideoEditActivity extends AbsActivity implements
     private static final int STATUS_PLAY = 1;
     private static final int STATUS_PAUSE = 2;
     private static final int STATUS_PREVIEW_AT_TIME = 3;
+    private TXVideoEditConstants.TXVideoInfo mVideoInfo;
 
     public static void forward(Context context, long videoDuration, String videoPath, boolean fromRecord, boolean hasOriginBgm) {
         Intent intent = new Intent(context, VideoEditActivity.class);
@@ -109,6 +116,7 @@ public class VideoEditActivity extends AbsActivity implements
     private boolean mUseWaterMark;
     private int mGenerateProgress;//生成视频的进度
     private boolean mIsGenerateComplete;//生成视频结束
+    private int mBitRate = 2500;
 
 
     @Override
@@ -155,6 +163,27 @@ public class VideoEditActivity extends AbsActivity implements
         mCutStartTime = 0;
         mCutEndTime = mVideoDuration;
         startPreProcess();
+
+        getBitRate();
+    }
+
+    private void getBitRate() {
+        VideoHttpUtil.getVidoeBitRate(new HttpCallback() {
+            @Override
+            public void onSuccess(int code, String msg, String[] info) {
+                if (code == 0 && info.length > 0) {
+                    JSONObject obj = null;
+                    try {
+                        obj = JSON.parseObject(info[0]);
+                        mBitRate = Integer.valueOf(String.valueOf(obj.get("option_value")));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+
+                }
+            }
+        });
     }
 
     private void deleteOriginVideoFile() {
@@ -633,6 +662,13 @@ public class VideoEditActivity extends AbsActivity implements
         if (mVideoEditer == null) {
             return;
         }
+
+        if (mVideoInfo != null) {
+            if (mVideoInfo.bitrate > mBitRate) {
+                mVideoEditer.setVideoBitrate(mBitRate);
+            }
+        }
+
         if (mUseWaterMark) {
             getWaterMark(new CommonCallback<Bitmap>() {
                 @Override
@@ -828,6 +864,8 @@ public class VideoEditActivity extends AbsActivity implements
         mVideoProcessViewHolder = null;
         mVideoGenerateViewHolder = null;
         mBitmapList = null;
+
+        VideoHttpUtil.cancel(VideoHttpConsts.GET_VIDOE_BITRATE);
     }
 
 
@@ -872,9 +910,9 @@ public class VideoEditActivity extends AbsActivity implements
             @Override
             public void run() {
                 try {
-                    TXVideoEditConstants.TXVideoInfo info = TXVideoInfoReader.getInstance().getVideoFileInfo(mOriginVideoPath);
+                    mVideoInfo = TXVideoInfoReader.getInstance().getVideoFileInfo(mOriginVideoPath);
                     if (mHandler != null) {
-                        if (info == null) {
+                        if (mVideoInfo == null) {
                             mHandler.sendEmptyMessage(MyHandler.ERROR);
                         } else {
                             mHandler.sendEmptyMessage(MyHandler.SUCCESS);
@@ -903,6 +941,7 @@ public class VideoEditActivity extends AbsActivity implements
                 thumbnail.height = 100;
                 mVideoEditer.setThumbnail(thumbnail);
                 mVideoEditer.processVideo();
+
             }
         } catch (Exception e) {
             e.printStackTrace();
