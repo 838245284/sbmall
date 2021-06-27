@@ -8,10 +8,10 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
-import com.tencent.live.TXLivePusher;
 import com.tencent.rtmp.ITXLivePushListener;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXLivePushConfig;
+import com.tencent.rtmp.TXLivePusher;
 import com.tencent.rtmp.ui.TXCloudVideoView;
 
 import cn.wu1588.common.utils.L;

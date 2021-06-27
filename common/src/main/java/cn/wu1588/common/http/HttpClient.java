@@ -3,7 +3,6 @@ package cn.wu1588.common.http;
 import com.lzy.okgo.https.HttpsUtils;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okgo.request.PostRequest;
-import com.tencent.live.OkHttpBuilder;
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.CommonAppContext;
 

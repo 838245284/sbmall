@@ -28,9 +28,8 @@ import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTSplashAd;
-import com.tencent.live.InitEvent;
-import com.tencent.live.TXLiveBase;
 import com.tencent.rtmp.ITXLivePlayListener;
+import com.tencent.rtmp.TXLiveBase;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXLivePlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
@@ -220,7 +219,8 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onInitEvent(InitEvent e) {
+//    public void onInitEvent(InitEvent e) {
+    public void onInitEvent(Object e) {
         if (mWaitEnd) {
             getConfig();
         }
@@ -260,9 +260,9 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
      */
 
     private void getConfig() {
-        if (!TXLiveBase.getInstance().isInited()) {
-            return;
-        }
+//        if (!TXLiveBase.getInstance().isInited()) {
+//            return;
+//        }
         CommonHttpUtil.getConfig(new CommonCallback<ConfigBean>() {
             @Override
             public void callback(ConfigBean bean) {

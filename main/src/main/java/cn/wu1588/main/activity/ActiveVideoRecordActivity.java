@@ -14,13 +14,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
-import com.tencent.live.TXUGCRecord;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXVodPlayConfig;
 import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
 import com.tencent.ugc.TXRecordCommon;
 import com.tencent.ugc.TXUGCPartsManager;
+import com.tencent.ugc.TXUGCRecord;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.CommonAppContext;
 import cn.wu1588.common.Constants;

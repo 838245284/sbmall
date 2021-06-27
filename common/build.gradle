@@ -104,7 +104,11 @@ dependencies {
     compile project(':mob')
 //    compile project(':tencent')
     //    //腾讯直播sdk
-    compile(name: 'LiteAVSDK_Professional', ext: 'aar')
+//    compile(name: 'LiteAVSDK_Professional', ext: 'aar')
+    compile 'com.lzy.net:okgo:3.0.4'
+    compile 'com.lzy.net:okserver:2.0.5'
+    compile 'com.tencent.liteavsdk:LiteAVSDK_Professional:latest.release'
+
     //阿里 ARouter
     compile rootProject.ext.dependencies["arouter"]
 

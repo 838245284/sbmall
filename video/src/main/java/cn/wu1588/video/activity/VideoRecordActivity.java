@@ -15,11 +15,11 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.meihu.beautylibrary.manager.MHBeautyManager;
-import com.tencent.live.TXUGCRecord;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.ui.TXCloudVideoView;
 import com.tencent.ugc.TXRecordCommon;
 import com.tencent.ugc.TXUGCPartsManager;
+import com.tencent.ugc.TXUGCRecord;
 
 import java.util.ArrayList;
 import java.util.List;

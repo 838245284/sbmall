@@ -20,10 +20,10 @@ import com.meihu.beautylibrary.filter.glfilter.resource.ResourceHelper;
 import com.meihu.beautylibrary.manager.StickerDownLoader;
 import com.meihu.beautylibrary.utils.DownloadUtil;
 import com.meihu.beautylibrary.utils.FileUtil;
-import com.tencent.live.TXLivePusher;
 import com.tencent.rtmp.ITXLivePushListener;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXLivePushConfig;
+import com.tencent.rtmp.TXLivePusher;
 import com.tencent.rtmp.ui.TXCloudVideoView;
 
 import java.io.File;

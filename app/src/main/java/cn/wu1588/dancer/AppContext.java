@@ -10,7 +10,8 @@ import com.meihu.beautylibrary.MHSDK;
 import com.mob.MobSDK;
 import com.qiniu.pili.droid.shortvideo.PLShortVideoEnv;
 import com.tencent.bugly.crashreport.CrashReport;
-import com.tencent.live.TXLiveBase;
+import com.tencent.rtmp.TXLiveBase;
+import com.tencent.ugc.TXUGCBase;
 
 import cn.wu1588.beauty.ui.views.BeautyDataModel;
 import cn.wu1588.common.CommonAppConfig;
@@ -43,7 +44,9 @@ public class AppContext extends CommonAppContext {
         String ugcLicenceUrl = "http://license.vod2.myqcloud.com/license/v1/1ebb5a4157a9a818802d468d603bee65/TXUgcSDK.licence";
         //腾讯云视频鉴权key
         String ugcKey = "826969b36cd7fee009f3d74eb5b6d888";
-        TXLiveBase.getInstance().setLicence(this, liveLicenceUrl, liveKey, ugcLicenceUrl, ugcKey);
+        TXLiveBase.getInstance().setLicence(this, liveLicenceUrl, liveKey);
+        TXUGCBase.getInstance().setLicence(this, ugcLicenceUrl,ugcKey);
+//        TXLiveBase.getInstance().setLicence(this, liveLicenceUrl, liveKey, ugcLicenceUrl, ugcKey);
         L.setDeBug(BuildConfig.DEBUG);
         //初始化腾讯bugly
         CrashReport.initCrashReport(this);
