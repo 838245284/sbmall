@@ -239,20 +239,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         initVideoParameter();
         setVideoSize(originalVideoWidth, originalVideoHeight);
         getVideoThumbnailList();
-        logBitRate();
-    }
-
-    private void logBitRate() {
-        new Thread(){
-            @Override
-            public void run() {
-                TXVideoEditConstants.TXVideoInfo videoFileInfo = TXVideoInfoReader.getInstance().getVideoFileInfo(mVideoPath);
-                Log.d("视频发布Test", "logBitRate 视频码率=" + videoFileInfo.bitrate);
-
-            }
-        }.start();
-
-
     }
 
 
