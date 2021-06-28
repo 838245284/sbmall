@@ -51,6 +51,7 @@ import cn.wu1588.common.custom.CircleProgress;
 import cn.wu1588.common.glide.ImgLoader;
 import cn.wu1588.common.http.CommonHttpConsts;
 import cn.wu1588.common.http.CommonHttpUtil;
+import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.interfaces.CommonCallback;
 import cn.wu1588.common.utils.DownloadUtil;
 import cn.wu1588.common.utils.L;
@@ -76,6 +77,7 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
     private static final String TAG = "LauncherActivity";
     private static final int WHAT_GET_CONFIG = 0;
     private static final int WHAT_COUNT_DOWN = 1;
+    private static final int WHAT_FORWARD = 2;
     private Handler mHandler;
     protected Context mContext;
     private ViewGroup mRoot;
@@ -118,6 +120,14 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
         if (android.os.Build.VERSION.SDK_INT != Build.VERSION_CODES.O) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        MainHttpUtil.isNeedAd(new HttpCallback() {
+            @Override
+            public void onSuccess(int code, String msg, String[] info) {
+                JSONObject obj = JSON.parseObject(info[0]);
+                String value = obj.getString("option_value");
+                SpUtil.getInstance().setStringValue(SpUtil.AD,value);
+            }
+        });
         mContext = this;
         mRoot = findViewById(R.id.root);
         mCover = findViewById(R.id.cover);
@@ -140,81 +150,94 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
                     case WHAT_COUNT_DOWN:
                         updateCountDown();
                         break;
+                    case WHAT_FORWARD:
+                        forwardActivity();
+                        break;
                 }
             }
         };
         mHandler.sendEmptyMessageDelayed(WHAT_GET_CONFIG, 1000);
-        TTAdNative mTTAdNative = TTAdSdk.getAdManager().createAdNative(this);
-        AdSlot adSlot = new AdSlot.Builder()
-                .setCodeId("887491230")
-                .setImageAcceptedSize(1080, 1920)
-                .build();
-        mTTAdNative.loadSplashAd(adSlot, new TTAdNative.SplashAdListener() {
-            //请求广告失败
-            @Override
-            @MainThread
-            public void onError(int code, String message) {
-                //开发者处理跳转到APP主页面逻辑
-                forwardMainActivity();
-            }
-
-            //请求广告超时
-            @Override
-            @MainThread
-            public void onTimeout() {
-                //开发者处理跳转到APP主页面逻辑
-                forwardActivity();
-            }
-
-            //请求广告成功
-            @Override
-            @MainThread
-            public void onSplashAdLoad(TTSplashAd ad) {
-                if (ad == null) {
-                    return;
+        String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+        if(TextUtils.equals(stringValue,"1")){
+            TTAdNative mTTAdNative = TTAdSdk.getAdManager().createAdNative(this);
+            AdSlot adSlot = new AdSlot.Builder()
+                    .setCodeId("887491230")
+                    .setImageAcceptedSize(1080, 1920)
+                    .build();
+            mTTAdNative.loadSplashAd(adSlot, new TTAdNative.SplashAdListener() {
+                //请求广告失败
+                @Override
+                @MainThread
+                public void onError(int code, String message) {
+                    //开发者处理跳转到APP主页面逻辑
+                    forwardMainActivity();
                 }
-                //获取SplashView
-                View view = ad.getSplashView();
-                if (view != null && !LauncherActivity.this.isFinishing()) {
-                    mRoot.removeAllViews();
-                    //把SplashView 添加到ViewGroup中,注意开屏广告view：width =屏幕宽；height >=75%屏幕高
-                    mRoot.addView(view);
-                    //设置不开启开屏广告倒计时功能以及不显示跳过按钮,如果这么设置，您需要自定义倒计时逻辑
-                    //ad.setNotAllowSdkCountdown();
-                }else {
+
+                //请求广告超时
+                @Override
+                @MainThread
+                public void onTimeout() {
                     //开发者处理跳转到APP主页面逻辑
                     forwardActivity();
                 }
 
-                //设置SplashView的交互监听器
-                ad.setSplashInteractionListener(new TTSplashAd.AdInteractionListener() {
-                    @Override
-                    public void onAdClicked(View view, int type) {
-                        Log.d(TAG, "onAdClicked");
+                //请求广告成功
+                @Override
+                @MainThread
+                public void onSplashAdLoad(TTSplashAd ad) {
+                    if (ad == null) {
+                        return;
                     }
-
-                    @Override
-                    public void onAdShow(View view, int type) {
-                        Log.d(TAG, "onAdShow");
-                    }
-
-                    @Override
-                    public void onAdSkip() {
-                        Log.d(TAG, "onAdSkip");
-                        forwardActivity();
-
-                    }
-
-                    @Override
-                    public void onAdTimeOver() {
-                        Log.d(TAG, "onAdTimeOver");
+                    //获取SplashView
+                    View view = ad.getSplashView();
+                    if (view != null && !LauncherActivity.this.isFinishing()) {
+                        mRoot.removeAllViews();
+                        //把SplashView 添加到ViewGroup中,注意开屏广告view：width =屏幕宽；height >=75%屏幕高
+                        mRoot.addView(view);
+                        //设置不开启开屏广告倒计时功能以及不显示跳过按钮,如果这么设置，您需要自定义倒计时逻辑
+                        //ad.setNotAllowSdkCountdown();
+                    }else {
+                        //开发者处理跳转到APP主页面逻辑
                         forwardActivity();
                     }
-                });
-            }
+
+                    //设置SplashView的交互监听器
+                    ad.setSplashInteractionListener(new TTSplashAd.AdInteractionListener() {
+                        @Override
+                        public void onAdClicked(View view, int type) {
+                            Log.d(TAG, "onAdClicked");
+                        }
+
+                        @Override
+                        public void onAdShow(View view, int type) {
+                            Log.d(TAG, "onAdShow");
+                        }
+
+                        @Override
+                        public void onAdSkip() {
+                            Log.d(TAG, "onAdSkip");
+                            forwardActivity();
+
+                        }
+
+                        @Override
+                        public void onAdTimeOver() {
+                            Log.d(TAG, "onAdTimeOver");
+                            forwardActivity();
+                        }
+                    });
+                }
 
 
-        }, 5000);
+            }, 5000);
+        }else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    forwardActivity();
+                }
+            },2000);
+        }
 
 
     }

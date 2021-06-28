@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ import cn.wu1588.common.utils.DensityUtils;
 import cn.wu1588.common.utils.DpUtil;
 import cn.wu1588.common.utils.JsonUtil;
 import cn.wu1588.common.utils.LogUtil;
+import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.main.R;
 import cn.wu1588.main.adapter.MainHomeVideoAdapter;
 import cn.wu1588.video.activity.VideoLongDetailsActivity;
@@ -159,11 +161,14 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
                 if (list == null || list.isEmpty()) {
                     return;
                 }
-                int space = list.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
-                int size = list.size();
-                for (int i = 0; i < size; i += space) {
-                    if (i != 0 && i % space == 0) {
-                        loadListAd(space, i);
+                String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+                if(TextUtils.equals(stringValue,"1")){
+                    int space = list.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
+                    int size = list.size();
+                    for (int i = 0; i < size; i += space) {
+                        if (i != 0 && i % space == 0) {
+                            loadListAd(space, i);
+                        }
                     }
                 }
             }

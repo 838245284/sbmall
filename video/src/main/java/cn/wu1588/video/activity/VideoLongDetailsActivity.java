@@ -48,6 +48,7 @@ import cn.wu1588.common.interfaces.OnItemClickListener;
 import cn.wu1588.common.utils.DensityUtils;
 import cn.wu1588.common.utils.JsonUtil;
 import cn.wu1588.common.utils.RouteUtil;
+import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.common.utils.TextViewUtils;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.live.dialog.LiveGiftDialogFragment;
@@ -219,9 +220,12 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
 //                int space = list.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
                 int space = 5;
                 int size = list.size();
-                for (int i = 0; i < size; i += space) {
-                    if (i != 0 && i % space == 0) {
-                        loadListAd(space, i);
+                String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+                if(TextUtils.equals(stringValue,"1")){
+                    for (int i = 0; i < size; i += space) {
+                        if (i != 0 && i % space == 0) {
+                            loadListAd(space, i);
+                        }
                     }
                 }
             }

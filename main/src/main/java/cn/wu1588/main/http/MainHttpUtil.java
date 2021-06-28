@@ -2,6 +2,9 @@ package cn.wu1588.main.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import java.io.File;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.bean.GoodsBean;
 import cn.wu1588.common.bean.UserBean;
@@ -12,8 +15,6 @@ import cn.wu1588.common.interfaces.CommonCallback;
 import cn.wu1588.common.utils.MD5Util;
 import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.common.utils.StringUtil;
-
-import java.io.File;
 
 /**
  * Created by cxf on 2018/9/17.
@@ -37,6 +38,13 @@ public class MainHttpUtil {
         HttpClient.getInstance().get("Login.userLogin", MainHttpConsts.LOGIN)
                 .params("user_login", phoneNum)
                 .params("user_pass", pwd)
+                .execute(callback);
+
+    }
+
+    public static void isNeedAd(HttpCallback callback) {
+        HttpClient.getInstance().get("Home.query_option", MainHttpConsts.LOGIN)
+                .params("option_name", "ad_power")
                 .execute(callback);
 
     }

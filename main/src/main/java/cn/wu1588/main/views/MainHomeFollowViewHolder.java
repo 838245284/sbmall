@@ -4,12 +4,18 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
+import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.adapter.RefreshAdapter;
 import cn.wu1588.common.custom.CommonRefreshView;
@@ -18,6 +24,7 @@ import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.interfaces.OnItemClickListener;
 import cn.wu1588.common.utils.DensityUtils;
 import cn.wu1588.common.utils.JsonUtil;
+import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.main.R;
 import cn.wu1588.main.adapter.MainHomeVideoAdapter;
 import cn.wu1588.main.http.MainHttpConsts;
@@ -28,10 +35,6 @@ import cn.wu1588.video.bean.VideoWithAds;
 import cn.wu1588.video.http.VideoHttpUtil;
 import cn.wu1588.video.interfaces.VideoScrollDataHelper;
 import cn.wu1588.video.utils.VideoStorge;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by cxf on 2018/9/22.
@@ -102,11 +105,14 @@ public class MainHomeFollowViewHolder extends AbsMainHomeChildViewHolder impleme
                 if (list == null || list.isEmpty()) {
                     return;
                 }
-                int space = 10;
-                int size = list.size();
-                for (int i = 0; i < size; i += space) {
-                    if (i != 0 && i % space == 0) {
-                        loadListAd(i);
+                String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+                if(TextUtils.equals(stringValue,"1")){
+                    int space = 10;
+                    int size = list.size();
+                    for (int i = 0; i < size; i += space) {
+                        if (i != 0 && i % space == 0) {
+                            loadListAd(i);
+                        }
                     }
                 }
             }

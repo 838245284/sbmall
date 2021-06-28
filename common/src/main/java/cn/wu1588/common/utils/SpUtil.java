@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import cn.wu1588.common.CommonAppContext;
-
 import java.util.Map;
+
+import cn.wu1588.common.CommonAppContext;
 
 /**
  * Created by cxf on 2018/9/17.
@@ -31,6 +31,7 @@ public class SpUtil {
     public static final String LOCATION_DISTRICT = "locationDistrict";
     public static final String TI_BEAUTY_ENABLE = "tiBeautyEnable";
     public static final String BEAUTY_KEY = "beautyKey";
+    public static final String AD = "ad";
     public static final String BRIGHTNESS = "brightness";//亮度
 
 
