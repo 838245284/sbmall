@@ -124,7 +124,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      */
     public void stopPlay() {
         if (mVideoView != null) {
-            mVideoView.release();
+            mVideoView.onVideoPause();
         }
     }
 
