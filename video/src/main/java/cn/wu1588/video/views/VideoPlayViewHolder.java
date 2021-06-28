@@ -5,16 +5,20 @@ import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.RelativeLayout;
 
+import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack;
+import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
 import com.tencent.rtmp.ITXVodPlayListener;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXVodPlayConfig;
 import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.utils.L;
 import cn.wu1588.common.views.AbsViewHolder;
@@ -23,26 +27,22 @@ import cn.wu1588.video.bean.VideoBean;
 import cn.wu1588.video.http.VideoHttpConsts;
 import cn.wu1588.video.http.VideoHttpUtil;
 import cn.wu1588.video.R;
+
 /**
  * Created by cxf on 2018/11/30.
  * 视频播放器
  */
 
-public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayListener, View.OnClickListener {
+public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickListener {
 
-    private TXCloudVideoView mTXCloudVideoView;
+    private SVideoPlayer mVideoView;
+
+    ActionListener mActionListener;
+
     private View mVideoCover;
-    private TXVodPlayer mPlayer;
-    private boolean mPaused;//生命周期暂停
-    private boolean mClickPaused;//点击暂停
-    private ActionListener mActionListener;
     private View mPlayBtn;
     private ObjectAnimator mPlayBtnAnimator;//暂停按钮的动画
-    private boolean mStartPlay;
-    private boolean mEndPlay;
     private VideoBean mVideoBean;
-    private String mCachePath;
-    private TXVodPlayConfig mTXVodPlayConfig;
 
     public VideoPlayViewHolder(Context context, ViewGroup parentView) {
         super(context, parentView);
@@ -56,19 +56,28 @@ public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayList
 
     @Override
     public void init() {
-        mCachePath = mContext.getCacheDir().getAbsolutePath();
-        mTXCloudVideoView = (TXCloudVideoView) findViewById(R.id.video_view);
-        mTXCloudVideoView.setRenderMode(TXLiveConstants.RENDER_MODE_FULL_FILL_SCREEN);
-        mPlayer = new TXVodPlayer(mContext);
-        mTXVodPlayConfig = new TXVodPlayConfig();
-        mTXVodPlayConfig.setMaxCacheItems(15);
-        mTXVodPlayConfig.setProgressInterval(200);
-        mTXVodPlayConfig.setHeaders(CommonAppConfig.HEADER);
-        mPlayer.setConfig(mTXVodPlayConfig);
-        mPlayer.setAutoPlay(true);
-        mPlayer.setVodListener(this);
-        mPlayer.setPlayerView(mTXCloudVideoView);
-        findViewById(R.id.root).setOnClickListener(this);
+        mVideoView = findViewById(R.id.video_view);
+
+        // 重复播放
+        mVideoView.setLooping(true);
+
+        mVideoView.setVideoAllCallBack(new GSYSampleCallBack() {
+            @Override
+            public void onPrepared(String url, Object... objects) {
+                Log.d("GSYVIDEO", "onPrepared url=" + url);
+                if (mActionListener != null) {
+                    mActionListener.onFirstFrame();
+                    mActionListener.onPlayLoading();
+                }
+            }
+
+            @Override
+            public void onAutoComplete(String url, Object... objects) {
+                Log.d("GSYVIDEO", "onAutoComplete url=" + url);
+            }
+        });
+
+//        findViewById(R.id.root).setOnClickListener(this);
         mVideoCover = findViewById(R.id.video_cover);
         mPlayBtn = findViewById(R.id.btn_play);
         //暂停按钮动画
@@ -81,80 +90,9 @@ public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayList
     }
 
     /**
-     * 播放器事件回调
-     */
-    @Override
-    public void onPlayEvent(TXVodPlayer txVodPlayer, int e, Bundle bundle) {
-        switch (e) {
-            case TXLiveConstants.PLAY_EVT_PLAY_BEGIN://加载完成，开始播放的回调
-                mStartPlay = true;
-                if (mActionListener != null) {
-                    mActionListener.onPlayBegin();
-                }
-
-                break;
-            case TXLiveConstants.PLAY_EVT_PLAY_LOADING: //开始加载的回调
-                if (mActionListener != null) {
-                    mActionListener.onPlayLoading();
-                }
-                break;
-            case TXLiveConstants.PLAY_EVT_PLAY_END://获取到视频播放完毕的回调
-                replay();
-                if (!mEndPlay) {
-                    mEndPlay = true;
-                    if (mVideoBean != null) {
-                        VideoHttpUtil.videoWatchEnd(mVideoBean.getUid(), mVideoBean.getId());
-                    }
-                }
-                break;
-            case TXLiveConstants.PLAY_EVT_RCV_FIRST_I_FRAME://获取到视频首帧回调
-                if (mActionListener != null) {
-                    mActionListener.onFirstFrame();
-                }
-                if (mPaused && mPlayer != null) {
-                    mPlayer.pause();
-                }
-                break;
-            case TXLiveConstants.PLAY_EVT_CHANGE_RESOLUTION://获取到视频宽高回调
-                onVideoSizeChanged(bundle.getInt("EVT_PARAM1", 0), bundle.getInt("EVT_PARAM2", 0));
-                break;
-        }
-    }
-
-    @Override
-    public void onNetStatus(TXVodPlayer txVodPlayer, Bundle bundle) {
-
-    }
-
-    /**
-     * 获取到视频宽高回调
-     */
-    public void onVideoSizeChanged(float videoWidth, float videoHeight) {
-        if (mTXCloudVideoView != null && videoWidth > 0 && videoHeight > 0) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTXCloudVideoView.getLayoutParams();
-            int targetH = 0;
-            if (videoWidth / videoHeight > 0.5625f) {//横屏 9:16=0.5625
-                targetH = (int) (mTXCloudVideoView.getWidth() / videoWidth * videoHeight);
-            } else {
-                targetH = ViewGroup.LayoutParams.MATCH_PARENT;
-            }
-            if (targetH != params.height) {
-                params.height = targetH;
-                mTXCloudVideoView.requestLayout();
-            }
-            if (mVideoCover != null && mVideoCover.getVisibility() == View.VISIBLE) {
-                mVideoCover.setVisibility(View.INVISIBLE);
-            }
-        }
-    }
-
-    /**
      * 开始播放
      */
     public void startPlay(VideoBean videoBean) {
-        mStartPlay = false;
-        mClickPaused = false;
-        mEndPlay = false;
         mVideoBean = videoBean;
         if (mVideoCover != null && mVideoCover.getVisibility() != View.VISIBLE) {
             mVideoCover.setVisibility(View.VISIBLE);
@@ -168,21 +106,9 @@ public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayList
         if (TextUtils.isEmpty(url)) {
             return;
         }
-        if (mTXVodPlayConfig == null) {
-            mTXVodPlayConfig = new TXVodPlayConfig();
-            mTXVodPlayConfig.setMaxCacheItems(15);
-            mTXVodPlayConfig.setProgressInterval(200);
-            mTXVodPlayConfig.setHeaders(CommonAppConfig.HEADER);
-        }
-        if (url.endsWith(".m3u8")) {
-            mTXVodPlayConfig.setCacheFolderPath(null);
-        } else {
-            mTXVodPlayConfig.setCacheFolderPath(mCachePath);
-        }
-        mPlayer.setConfig(mTXVodPlayConfig);
-        if (mPlayer != null) {
-            mPlayer.startPlay(url);
-        }
+
+        mVideoView.setUp(videoBean.getHref(), true, "");
+        mVideoView.startPlayLogic();
         VideoHttpUtil.videoWatchStart(videoBean.getUid(), videoBean.getId());
     }
 
@@ -190,8 +116,8 @@ public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayList
      * 停止播放
      */
     public void stopPlay() {
-        if (mPlayer != null) {
-            mPlayer.stopPlay(false);
+        if (mVideoView != null) {
+            mVideoView.release();
         }
     }
 
@@ -199,43 +125,33 @@ public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayList
      * 循环播放
      */
     private void replay() {
-        if (mPlayer != null) {
-            mPlayer.seek(0);
-            mPlayer.resume();
-        }
+        mVideoView.startPlayLogic();
     }
 
     public void release() {
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_START);
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_END);
-        if (mPlayer != null) {
-            mPlayer.stopPlay(false);
-            mPlayer.setPlayListener(null);
+        if (mVideoView != null) {
+            mVideoView.release();
         }
-        mPlayer = null;
-        mActionListener = null;
+
     }
 
     /**
      * 生命周期暂停
      */
     public void pausePlay() {
-        mPaused = true;
-        if (!mClickPaused && mPlayer != null) {
-            mPlayer.pause();
-        }
+        if (mVideoView != null)
+            mVideoView.onVideoPause();
     }
 
     /**
      * 生命周期恢复
      */
     public void resumePlay() {
-        if (mPaused) {
-            if (!mClickPaused && mPlayer != null) {
-                mPlayer.resume();
-            }
-        }
-        mPaused = false;
+
+        if (mVideoView != null)
+            mVideoView.onVideoResume();
     }
 
     /**
@@ -257,37 +173,9 @@ public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayList
     }
 
 
-    /**
-     * 点击切换播放和暂停
-     */
-    private void clickTogglePlay() {
-        if (!mStartPlay) {
-            return;
-        }
-        if (mPlayer != null) {
-            if (mClickPaused) {
-                mPlayer.resume();
-            } else {
-                mPlayer.pause();
-            }
-        }
-        mClickPaused = !mClickPaused;
-        if (mClickPaused) {
-            showPlayBtn();
-            if (mPlayBtnAnimator != null) {
-                mPlayBtnAnimator.start();
-            }
-        } else {
-            hidePlayBtn();
-        }
-    }
-
     @Override
     public void onClick(View v) {
-        int i = v.getId();
-        if (i == R.id.root) {
-            clickTogglePlay();
-        }
+
     }
 
 
@@ -303,4 +191,126 @@ public class VideoPlayViewHolder extends AbsViewHolder implements ITXVodPlayList
     public void setActionListener(ActionListener actionListener) {
         mActionListener = actionListener;
     }
+
+
+    VideoAllCallBack mVideoAllCallBack = new VideoAllCallBack() {
+        @Override
+        public void onStartPrepared(String url, Object... objects) {
+            Log.d("GSYVIDEO", "onStartPrepared url=" + url);
+        }
+
+        @Override
+        public void onPrepared(String url, Object... objects) {
+            Log.d("GSYVIDEO", "onPrepared url=" + url);
+            if (mActionListener != null) {
+                mActionListener.onFirstFrame();
+                mActionListener.onPlayLoading();
+            }
+        }
+
+        @Override
+        public void onClickStartIcon(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickStartError(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickStop(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickStopFullscreen(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickResume(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickResumeFullscreen(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickSeekbar(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickSeekbarFullscreen(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onAutoComplete(String url, Object... objects) {
+            Log.d("GSYVIDEO", "onAutoComplete url=" + url);
+            if (mActionListener != null) {
+                mActionListener.onPlayBegin();
+            }
+
+        }
+
+        @Override
+        public void onEnterFullscreen(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onQuitFullscreen(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onQuitSmallWidget(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onEnterSmallWidget(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onTouchScreenSeekVolume(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onTouchScreenSeekPosition(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onTouchScreenSeekLight(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onPlayError(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickStartThumb(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickBlank(String url, Object... objects) {
+
+        }
+
+        @Override
+        public void onClickBlankFullscreen(String url, Object... objects) {
+
+        }
+    };
+
 }
