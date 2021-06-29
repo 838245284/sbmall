@@ -118,7 +118,7 @@ public class LuckPanView extends View {
         if (mHolders != null) {
             for (ImgHolder h : mHolders) {
                 if (h != null && h.mBitmap != null && !h.mBitmap.isRecycled()) {
-                    h.mBitmap.recycle();
+//                    h.mBitmap.recycle();
                 }
             }
         }

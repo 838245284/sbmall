@@ -420,7 +420,7 @@ public class BuyerCommentActivity extends AbsActivity implements View.OnClickLis
             }
         }
         if (bitmap != null) {
-            bitmap.recycle();
+//            bitmap.recycle();
         }
         return imageFile;
 

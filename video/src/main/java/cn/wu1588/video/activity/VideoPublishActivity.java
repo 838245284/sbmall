@@ -435,9 +435,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         mPlayStarted = false;
         if (mVideoCoverAdapter != null && mVideoCoverAdapter.getList() != null) {
             for (CoverBean coverBean : mVideoCoverAdapter.getList()) {
-                if (coverBean.getBitmap() != null) {
+                /*if (coverBean.getBitmap() != null) {
                     coverBean.getBitmap().recycle();
-                }
+                }*/
             }
         }
         if (mPlayer != null) {
