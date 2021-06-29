@@ -655,9 +655,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
                 }
             }
         }
-//        if (bitmap != null) {
-//            bitmap.recycle();
-//        }
+        if (bitmap != null) {
+            bitmap.recycle();
+        }
         if (imageFile == null) {
             ToastUtil.show(R.string.video_cover_img_failed);
             onFailed();
