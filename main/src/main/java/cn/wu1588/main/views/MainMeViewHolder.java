@@ -330,6 +330,7 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
      */
     private void forwardMyVideo() {
         mContext.startActivity(new Intent(mContext, MyVideoActivity.class));
+//        mContext.startActivity(new Intent(mContext, TestActivity.class));
     }
 
     /**

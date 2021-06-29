@@ -3,11 +3,6 @@ package cn.wu1588.video.upload;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
-import cn.wu1588.common.bean.ConfigBean;
-import cn.wu1588.common.http.HttpCallback;
-import cn.wu1588.common.utils.L;
-import cn.wu1588.video.http.VideoHttpConsts;
-import cn.wu1588.video.http.VideoHttpUtil;
 import com.qiniu.android.common.ServiceAddress;
 import com.qiniu.android.common.Zone;
 import com.qiniu.android.http.ResponseInfo;
@@ -18,6 +13,12 @@ import com.qiniu.android.storage.UploadManager;
 import org.json.JSONObject;
 
 import java.io.File;
+
+import cn.wu1588.common.bean.ConfigBean;
+import cn.wu1588.common.http.HttpCallback;
+import cn.wu1588.common.utils.L;
+import cn.wu1588.video.http.VideoHttpConsts;
+import cn.wu1588.video.http.VideoHttpUtil;
 
 /**
  * Created by cxf on 2018/5/21.
@@ -115,7 +116,7 @@ public class VideoUploadQnImpl implements VideoUploadStrategy {
             return;
         }
         if (mUploadManager == null) {
-            Zone zone = new Zone(new ServiceAddress("http://upload-z2.qiniup.com"), new ServiceAddress("http://up-z2.qiniup.com"));
+            Zone zone = new Zone(new ServiceAddress("http://upload-z0.qiniup.com"), new ServiceAddress("http://up-z0.qiniup.com"));
             Configuration configuration = new Configuration.Builder().zone(zone).build();
             mUploadManager = new UploadManager(configuration);
         }

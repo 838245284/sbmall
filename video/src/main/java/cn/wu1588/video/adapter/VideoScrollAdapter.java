@@ -22,6 +22,7 @@ import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.video.R;
 import cn.wu1588.video.activity.AbsVideoPlayActivity;
 import cn.wu1588.video.bean.VideoBean;
+import cn.wu1588.video.bean.VideoWithAds;
 import cn.wu1588.video.utils.VideoIconUtil;
 import cn.wu1588.video.views.VideoPlayWrapViewHolder;
 
@@ -34,7 +35,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     private static final String TAG = "VideoScrollAdapter";
     private static final int COUNT = 20;//接口每页返回多少条
     private Context mContext;
-    private List<VideoBean> mList;
+    private List<VideoWithAds> mList;
     private SparseArray<VideoPlayWrapViewHolder> mMap;
     private int mCurPosition;
     private ActionListener mActionListener;
@@ -44,7 +45,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     private Drawable[] mLikeAnimDrawables;
     private Handler mHandler;
 
-    public VideoScrollAdapter(Context context, List<VideoBean> list, int curPosition) {
+    public VideoScrollAdapter(Context context, List<VideoWithAds> list, int curPosition) {
         mContext = context;
         mList = list;
         mCurPosition = curPosition;
@@ -107,9 +108,9 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
             return;
         }
         for (int i = 0, size = mList.size(); i < size; i++) {
-            VideoBean bean = mList.get(i);
+            VideoWithAds bean = mList.get(i);
             if (bean != null) {
-                if (changedVideoId.equals(bean.getId())) {
+                if (changedVideoId.equals(bean.videoBean.getId())) {
                     notifyItemChanged(i, Constants.PAYLOAD);
                     break;
                 }
@@ -129,7 +130,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
             return;
         }
         for (int i = 0, size = mList.size(); i < size; i++) {
-            VideoBean bean = mList.get(i);
+            VideoBean bean = mList.get(i).videoBean;
             if (videoId.equals(bean.getId())) {
                 mList.remove(i);
                 notifyItemRemoved(i);
@@ -214,7 +215,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
             mVideoPlayWrapViewHolder = videoPlayWrapViewHolder;
         }
 
-        void setData(VideoBean bean, int position, Object payload) {
+        void setData(VideoWithAds bean, int position, Object payload) {
             if (mVideoPlayWrapViewHolder != null) {
                 mMap.put(position, mVideoPlayWrapViewHolder);
                 mVideoPlayWrapViewHolder.setData(bean, payload);
@@ -271,6 +272,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
     private void findCurVideo() {
         int position = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+
         if (position >= 0 && mCurPosition != position) {
             if (mHandler != null) {
                 mHandler.removeCallbacksAndMessages(null);
@@ -298,7 +300,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     /**
      * 插入数据
      */
-    public void insertList(List<VideoBean> list) {
+    public void insertList(List<VideoWithAds> list) {
         if (list != null && list.size() > 0 && mList != null && mRecyclerView != null) {
             int position = mList.size();
             mList.addAll(list);
@@ -306,11 +308,16 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
         }
     }
 
+    public void insertBean(VideoWithAds videoBean, int position) {
+        mList.add(position, videoBean);
+        notifyItemRangeInserted(position, mList.size());
+    }
+
 
     /**
      * 刷新列表
      */
-    public void setList(List<VideoBean> list) {
+    public void setList(List<VideoWithAds> list) {
         if (list != null && list.size() > 0 && mList != null && mRecyclerView != null) {
             mList.clear();
             mList.addAll(list);
@@ -326,7 +333,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     public void onFollowChanged(boolean needExclude, String excludeVideoId, String toUid, int isAttention) {
         if (mList != null && !TextUtils.isEmpty(toUid) && !TextUtils.isEmpty(excludeVideoId)) {
             for (int i = 0, size = mList.size(); i < size; i++) {
-                VideoBean videoBean = mList.get(i);
+                VideoBean videoBean = mList.get(i).videoBean;
                 if (videoBean != null) {
                     if (needExclude && excludeVideoId.equals(videoBean.getId())) {
                         continue;
@@ -346,7 +353,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     public void onLikeChanged(boolean needExclude, String videoId, int like, String likeNum) {
         if (mList != null && !TextUtils.isEmpty(videoId)) {
             for (int i = 0, size = mList.size(); i < size; i++) {
-                VideoBean videoBean = mList.get(i);
+                VideoBean videoBean = mList.get(i).videoBean;
                 if (videoBean != null && videoId.equals(videoBean.getId()) && !needExclude) {
                     videoBean.setLike(like);
                     videoBean.setLikeNum(likeNum);
@@ -363,7 +370,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     public void onCommentChanged(String videoId, String commentNum) {
         if (mList != null && !TextUtils.isEmpty(videoId)) {
             for (int i = 0, size = mList.size(); i < size; i++) {
-                VideoBean videoBean = mList.get(i);
+                VideoBean videoBean = mList.get(i).videoBean;
                 if (videoBean != null && videoId.equals(videoBean.getId())) {
                     videoBean.setCommentNum(commentNum);
                     notifyItemChanged(i, Constants.PAYLOAD);
@@ -379,7 +386,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     public void onShareChanged(String videoId, String shareNum) {
         if (mList != null && !TextUtils.isEmpty(videoId)) {
             for (int i = 0, size = mList.size(); i < size; i++) {
-                VideoBean videoBean = mList.get(i);
+                VideoBean videoBean = mList.get(i).videoBean;
                 if (videoBean != null && videoId.equals(videoBean.getId())) {
                     videoBean.setShareNum(shareNum);
                     notifyItemChanged(i, Constants.PAYLOAD);

@@ -6,6 +6,13 @@ import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Arrays;
+import java.util.List;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.adapter.RefreshAdapter;
@@ -15,7 +22,6 @@ import cn.wu1588.common.interfaces.OnItemClickListener;
 import cn.wu1588.common.utils.JsonUtil;
 import cn.wu1588.live.views.AbsUserHomeViewHolder;
 import cn.wu1588.main.R;
-
 import cn.wu1588.main.adapter.MyLongVideoAdapter;
 import cn.wu1588.video.activity.VideoLongDetailsActivity;
 import cn.wu1588.video.bean.VideoBean;
@@ -25,13 +31,6 @@ import cn.wu1588.video.http.VideoHttpConsts;
 import cn.wu1588.video.http.VideoHttpUtil;
 import cn.wu1588.video.interfaces.VideoScrollDataHelper;
 import cn.wu1588.video.utils.VideoStorge;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by cxf on 2018/12/14.

@@ -33,6 +33,7 @@ import cn.wu1588.common.views.AbsViewHolder;
 import cn.wu1588.video.R;
 import cn.wu1588.video.activity.AbsVideoPlayActivity;
 import cn.wu1588.video.bean.VideoBean;
+import cn.wu1588.video.bean.VideoWithAds;
 import cn.wu1588.video.dialog.VideoShareDialogFragment;
 import cn.wu1588.video.event.VideoLikeEvent;
 import cn.wu1588.video.http.VideoHttpUtil;
@@ -63,6 +64,9 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
     private Drawable[] mLikeAnimDrawables;//点赞帧动画
     private int mLikeAnimIndex;
     private String mTag;
+    private View mRightSection;
+    private View mBottomSection;
+    private VideoWithAds mWithAd;
 
 
     public VideoPlayWrapViewHolder(Context context, ViewGroup parentView) {
@@ -87,6 +91,8 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
         mCommentNum = (TextView) findViewById(R.id.comment_num);
         mShareNum = (TextView) findViewById(R.id.share_num);
         mBtnFollow = (ImageView) findViewById(R.id.btn_follow);
+        mRightSection = findViewById(R.id.right_section);
+        mBottomSection = findViewById(R.id.bottom_section);
         mFollowDrawable = ContextCompat.getDrawable(mContext, R.mipmap.icon_video_follow_1);
         mUnFollowDrawable = ContextCompat.getDrawable(mContext, R.mipmap.icon_video_follow_0);
         mAvatar.setOnClickListener(this);
@@ -157,18 +163,19 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
         mLikeAnimDrawables = drawables;
     }
 
-    public void setData(VideoBean bean, Object payload) {
-        if (bean == null) {
+    public void setData(VideoWithAds bean, Object payload) {
+        mWithAd = bean;
+        mVideoBean = bean.videoBean;
+        if (mVideoBean == null) {
             return;
         }
-        mVideoBean = bean;
         UserBean u = mVideoBean.getUserBean();
         if (payload == null) {
             if (mCover != null) {
                 setCoverImage();
             }
             if (mTitle != null) {
-                mTitle.setText(bean.getTitle());
+                mTitle.setText(mVideoBean.getTitle());
             }
             if (u != null) {
                 if (mAvatar != null) {
@@ -180,7 +187,7 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
             }
         }
         if (mBtnLike != null) {
-            if (bean.getLike() == 1) {
+            if (mVideoBean.getLike() == 1) {
                 if (mLikeAnimDrawables != null && mLikeAnimDrawables.length > 0) {
                     mBtnLike.setImageDrawable(mLikeAnimDrawables[mLikeAnimDrawables.length - 1]);
                 }
@@ -189,13 +196,13 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
             }
         }
         if (mLikeNum != null) {
-            mLikeNum.setText(bean.getLikeNum());
+            mLikeNum.setText(mVideoBean.getLikeNum());
         }
         if (mCommentNum != null) {
-            mCommentNum.setText(bean.getCommentNum());
+            mCommentNum.setText(mVideoBean.getCommentNum());
         }
         if (mShareNum != null) {
-            mShareNum.setText(bean.getShareNum());
+            mShareNum.setText(mVideoBean.getShareNum());
         }
         if (u != null && mBtnFollow != null) {
             String toUid = u.getId();
@@ -203,7 +210,7 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
                 if (mBtnFollow.getVisibility() != View.VISIBLE) {
                     mBtnFollow.setVisibility(View.VISIBLE);
                 }
-                if (bean.getAttent() == 1) {
+                if (mVideoBean.getAttent() == 1) {
                     mBtnFollow.setImageDrawable(mFollowDrawable);
                 } else {
                     mBtnFollow.setImageDrawable(mUnFollowDrawable);
@@ -215,7 +222,7 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
             }
         }
         if (mBtnGoods != null) {
-            int goodsType = bean.getType();
+            int goodsType = mVideoBean.getType();
             if (goodsType == 0) {
                 if (mBtnGoods.getVisibility() != View.GONE) {
                     mBtnGoods.setVisibility(View.GONE);
@@ -235,6 +242,7 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
     }
 
     private void setCoverImage() {
+        if(mVideoBean==null) return;
         ImgLoader.displayDrawable(mContext, mVideoBean.getThumb(), new ImgLoader.DrawableCallback() {
             @Override
             public void onLoadSuccess(Drawable drawable) {
@@ -265,6 +273,7 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
 
     public void addVideoView(View view) {
         if (mVideoContainer != null && view != null) {
+            mVideoContainer.removeAllViews();
             ViewParent parent = view.getParent();
             if (parent != null) {
                 ViewGroup viewGroup = (ViewGroup) parent;
@@ -278,8 +287,8 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
         }
     }
 
-    public VideoBean getVideoBean() {
-        return mVideoBean;
+    public VideoWithAds getVideoBean() {
+        return mWithAd;
     }
 
 
@@ -300,12 +309,14 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
         if (mCover != null && mCover.getVisibility() != View.VISIBLE) {
             mCover.setVisibility(View.VISIBLE);
         }
+        showAd(mWithAd.ad!=null);
     }
 
     /**
      * 滑入屏幕
      */
     public void onPageInWindow() {
+
         if (mCover != null) {
             if (mCover.getVisibility() != View.VISIBLE) {
                 mCover.setVisibility(View.VISIBLE);
@@ -313,8 +324,14 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
             mCover.setImageDrawable(null);
             setCoverImage();
         }
+        showAd(mWithAd.ad!=null);
     }
 
+    private void showAd(boolean isShow){
+        mCover.setVisibility(isShow?View.INVISIBLE:View.VISIBLE);
+        mRightSection.setVisibility(isShow?View.GONE:View.VISIBLE);
+        mBottomSection.setVisibility(isShow?View.GONE:View.VISIBLE);
+    }
     /**
      * 滑动到这一页 准备开始播放
      */

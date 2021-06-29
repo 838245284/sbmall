@@ -4,12 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
-import cn.wu1588.common.CommonAppConfig;
-import cn.wu1588.common.http.CommonHttpConsts;
-import cn.wu1588.common.http.CommonHttpUtil;
-import cn.wu1588.common.http.HttpCallback;
-import cn.wu1588.common.utils.L;
-import cn.wu1588.common.utils.StringUtil;
 import com.qiniu.android.common.ServiceAddress;
 import com.qiniu.android.common.Zone;
 import com.qiniu.android.http.ResponseInfo;
@@ -22,6 +16,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.List;
 
+import cn.wu1588.common.CommonAppConfig;
+import cn.wu1588.common.http.CommonHttpConsts;
+import cn.wu1588.common.http.CommonHttpUtil;
+import cn.wu1588.common.http.HttpCallback;
+import cn.wu1588.common.utils.L;
+import cn.wu1588.common.utils.StringUtil;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 import top.zibin.luban.OnRenameListener;
@@ -191,7 +191,7 @@ public class UploadQnImpl implements UploadStrategy {
     private void upload(UploadBean bean) {
         if (bean != null && !TextUtils.isEmpty(mToken) && mCompletionHandler != null) {
             if (mUploadManager == null) {
-                Zone zone = new Zone(new ServiceAddress("http://upload-z2.qiniup.com"), new ServiceAddress("http://up-z2.qiniup.com"));
+                Zone zone = new Zone(new ServiceAddress("http://upload-z0.qiniup.com"), new ServiceAddress("http://up-z0.qiniup.com"));
                 Configuration configuration = new Configuration.Builder().zone(zone).build();
                 mUploadManager = new UploadManager(configuration);
             }

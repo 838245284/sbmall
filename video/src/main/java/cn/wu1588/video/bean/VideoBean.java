@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
+
 import cn.wu1588.common.bean.UserBean;
 
 /**
@@ -46,6 +48,7 @@ public class VideoBean implements Parcelable {
     private String videoclass;
     private String video_cs;
     private String isattent; // 是否关注
+    public TTNativeExpressAd ad; //
 
 
     public VideoBean() {
