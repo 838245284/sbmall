@@ -13,14 +13,14 @@
     </RelativeLayout>
 
 
-    <ImageView
-        android:id="@+id/start"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@mipmap/ic_video_d_suspend"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center_vertical" />
+<!--    <ImageView-->
+<!--        android:id="@+id/start"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:src="@mipmap/ic_video_d_suspend"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:layout_gravity="center_vertical" />-->
 
 
 </RelativeLayout>

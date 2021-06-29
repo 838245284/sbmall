@@ -2,6 +2,7 @@ package cn.wu1588.video.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
@@ -47,16 +48,11 @@ public class SVideoPlayer extends StandardGSYVideoPlayer {
         //不需要双击暂停
     }
 
+
     @Override
-    protected void updateStartImage() {
-        ImageView imageView = (ImageView) mStartButton;
-        if (mCurrentState == CURRENT_STATE_PLAYING) {
-            imageView.setImageResource(0);
-        } else if (mCurrentState == CURRENT_STATE_ERROR) {
-            imageView.setImageResource(R.drawable.video_click_error_selector);
-        } else {
-            imageView.setImageResource(R.mipmap.icon_video_play);
-        }
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
     }
+
 
 }

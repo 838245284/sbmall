@@ -375,70 +375,6 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         mTXCloudVideoView.requestLayout();
     }
 
-    private void uploadCover(Bitmap bitmap) {
-        final String coverImagePath = mVideoPath.replace(".mp4", ".jpg");
-        File imageFile = new File(coverImagePath);
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (Exception e) {
-            imageFile = null;
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        if (bitmap != null) {
-            bitmap.recycle();
-        }
-        if (imageFile == null) {
-            ToastUtil.show(R.string.video_cover_img_failed);
-            onFailed();
-            return;
-        }
-        final File finalImageFile = imageFile;
-        //用鲁班压缩图片
-        Luban.with(this)
-                .load(finalImageFile)
-                .setFocusAlpha(false)
-                .ignoreBy(8)//8k以下不压缩
-                .setTargetDir(CommonAppConfig.VIDEO_PATH)
-                .setRenameListener(new OnRenameListener() {
-                    @Override
-                    public String rename(String filePath) {
-                        filePath = filePath.substring(filePath.lastIndexOf("/") + 1);
-                        return filePath.replace(".jpg", "_c.jpg");
-                    }
-                })
-                .setCompressListener(new OnCompressListener() {
-                    @Override
-                    public void onStart() {
-
-                    }
-
-                    @Override
-                    public void onSuccess(File file) {
-                        if (!finalImageFile.getAbsolutePath().equals(file.getAbsolutePath()) && finalImageFile.exists()) {
-                            finalImageFile.delete();
-                        }
-                        uploadVideoFile(file);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        uploadVideoFile(finalImageFile);
-                    }
-                }).launch();
-    }
-
     @Override
     public void onPlayEvent(TXVodPlayer txVodPlayer, int e, Bundle bundle) {
         switch (e) {
@@ -499,6 +435,13 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
         VideoHttpUtil.cancel(VideoHttpConsts.GET_CONCAT_GOODS);
         VideoHttpUtil.cancel(VideoHttpConsts.SAVE_UPLOAD_VIDEO_INFO);
         mPlayStarted = false;
+        if (mVideoCoverAdapter != null && mVideoCoverAdapter.getList() != null) {
+            for (CoverBean coverBean : mVideoCoverAdapter.getList()) {
+                if (coverBean.getBitmap() != null) {
+                    coverBean.getBitmap().recycle();
+                }
+            }
+        }
         if (mPlayer != null) {
             mPlayer.stopPlay(false);
             mPlayer.setPlayListener(null);
@@ -712,9 +655,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
                 }
             }
         }
-        if (bitmap != null) {
-            bitmap.recycle();
-        }
+//        if (bitmap != null) {
+//            bitmap.recycle();
+//        }
         if (imageFile == null) {
             ToastUtil.show(R.string.video_cover_img_failed);
             onFailed();

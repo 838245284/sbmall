@@ -9,10 +9,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack;
 import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
+import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.tencent.rtmp.ITXVodPlayListener;
 import com.tencent.rtmp.TXLiveConstants;
 import com.tencent.rtmp.TXVodPlayConfig;
@@ -20,6 +22,7 @@ import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
 
 import cn.wu1588.common.CommonAppConfig;
+import cn.wu1588.common.glide.ImgLoader;
 import cn.wu1588.common.utils.L;
 import cn.wu1588.common.views.AbsViewHolder;
 
@@ -39,10 +42,15 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
 
     ActionListener mActionListener;
 
-    private View mVideoCover;
     private View mPlayBtn;
     private ObjectAnimator mPlayBtnAnimator;//暂停按钮的动画
     private VideoBean mVideoBean;
+
+
+    private boolean mStartPlay;
+    private boolean mClickPaused;
+    private boolean mEndPlay;
+    private ImageView mVideoCoverView;
 
     public VideoPlayViewHolder(Context context, ViewGroup parentView) {
         super(context, parentView);
@@ -58,9 +66,14 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
     public void init() {
         mVideoView = findViewById(R.id.video_view);
 
+        mVideoCoverView = new ImageView(mContext);
+        mVideoCoverView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        mVideoView.setThumbImageView(mVideoCoverView);
+        //全屏裁减显示，为了显示正常 CoverImageView 建议使用FrameLayout作为父布局
+        GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL);
         // 重复播放
         mVideoView.setLooping(true);
-
+        mVideoView.setAutoFullWithSize(true);
         mVideoView.setVideoAllCallBack(new GSYSampleCallBack() {
             @Override
             public void onStartPrepared(String url, Object... objects) {
@@ -71,21 +84,32 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
 
             @Override
             public void onPrepared(String url, Object... objects) {
-                Log.d("GSYVIDEO", "onPrepared url=" + url);
+                mStartPlay = true;
                 if (mActionListener != null) {
-                    mActionListener.onFirstFrame();
-                    mActionListener.onPlayBegin();
+                    mContentView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mActionListener.onFirstFrame();
+                            mActionListener.onPlayBegin();
+                        }
+                    }, 100);
                 }
             }
 
             @Override
             public void onAutoComplete(String url, Object... objects) {
                 Log.d("GSYVIDEO", "onAutoComplete url=" + url);
+                if (!mEndPlay) {
+                    mEndPlay = true;
+                    if (mVideoBean != null) {
+                        VideoHttpUtil.videoWatchEnd(mVideoBean.getUid(), mVideoBean.getId());
+                    }
+                }
             }
         });
 
-//        findViewById(R.id.root).setOnClickListener(this);
-        mVideoCover = findViewById(R.id.video_cover);
+
+        findViewById(R.id.root).setOnClickListener(this);
         mPlayBtn = findViewById(R.id.btn_play);
         //暂停按钮动画
         mPlayBtnAnimator = ObjectAnimator.ofPropertyValuesHolder(mPlayBtn,
@@ -100,21 +124,23 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 开始播放
      */
     public void startPlay(VideoBean videoBean) {
+        mStartPlay = false;
+        mClickPaused = false;
+        mEndPlay = false;
         mVideoBean = videoBean;
-        if (mVideoCover != null && mVideoCover.getVisibility() != View.VISIBLE) {
-            mVideoCover.setVisibility(View.VISIBLE);
-        }
+//        ImgLoader.display(mContext, mVideoBean.getThumb(), videoCoverView);
         hidePlayBtn();
         if (videoBean == null) {
             return;
         }
+        ImgLoader.display(mContext, mVideoBean.getThumb(), mVideoCoverView);
+
         L.e("播放视频--->" + videoBean);
         String url = videoBean.getHref();
         if (TextUtils.isEmpty(url)) {
             return;
         }
-
-        mVideoView.setUp(videoBean.getHref(), true, "");
+        mVideoView.setUp(url, true, "");
         mVideoView.startPlayLogic();
         VideoHttpUtil.videoWatchStart(videoBean.getUid(), videoBean.getId());
     }
@@ -156,7 +182,6 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期恢复
      */
     public void resumePlay() {
-
         if (mVideoView != null)
             mVideoView.onVideoResume();
     }
@@ -182,9 +207,36 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-
+        int i = v.getId();
+        if (i == R.id.root) {
+            clickTogglePlay();
+        }
     }
 
+    /**
+     * 点击切换播放和暂停
+     */
+    private void clickTogglePlay() {
+        if (!mStartPlay) {
+            return;
+        }
+        if (mVideoView != null) {
+            if (mClickPaused) {
+                mVideoView.onVideoResume(false);
+            } else {
+                mVideoView.onVideoPause();
+            }
+        }
+        mClickPaused = !mClickPaused;
+        if (mClickPaused) {
+            showPlayBtn();
+            if (mPlayBtnAnimator != null) {
+                mPlayBtnAnimator.start();
+            }
+        } else {
+            hidePlayBtn();
+        }
+    }
 
     public interface ActionListener {
         void onPlayBegin();
@@ -198,7 +250,6 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
     public void setActionListener(ActionListener actionListener) {
         mActionListener = actionListener;
     }
-
 
 
 }
