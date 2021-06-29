@@ -27,7 +27,6 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.Constants;
@@ -849,7 +848,7 @@ public class VideoEditActivity extends AbsActivity implements
         if (mBitmapList != null) {
             for (Bitmap bitmap : mBitmapList) {
                 if (bitmap != null) {
-                    bitmap.recycle();
+//                    bitmap.recycle();
                 }
             }
             mBitmapList.clear();

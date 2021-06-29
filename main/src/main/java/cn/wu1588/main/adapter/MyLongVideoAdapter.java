@@ -13,13 +13,18 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Iterator;
+
 import cn.wu1588.common.adapter.RefreshAdapter;
 import cn.wu1588.common.bean.UserBean;
 import cn.wu1588.common.glide.ImgLoader;
+import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.utils.DensityUtils;
 
+import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.main.R;
 import cn.wu1588.video.bean.VideoBean;
+import cn.wu1588.video.http.VideoHttpUtil;
 
 /**
  * Created by cxf on 2018/12/14.
@@ -61,17 +66,27 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
     /**
      * 删除视频
      */
-    public void deleteVideo(String videoId) {
+    public void deleteVideo(final String videoId) {
         if (TextUtils.isEmpty(videoId)) {
             return;
         }
-//        for (int i = 0, size = mList.size(); i < size; i++) {
-//            if (videoId.equals(mList.get(i).getId())) {
-//                notifyItemRemoved(i);
-//                break;
-//            }
-//        }
-        notifyDataSetChanged();
+        VideoHttpUtil.videoDelete(videoId, new HttpCallback() {
+            @Override
+            public void onSuccess(int code, String msg, String[] info) {
+                if(code==0){
+                    Iterator<VideoBean> iterator = mList.iterator();
+                    while (iterator.hasNext()){
+                        VideoBean next = iterator.next();
+                        if(videoId.equals(next.getId())){
+                            iterator.remove();
+                        }
+                    }
+                    notifyDataSetChanged();
+                    ToastUtil.show("删除成功");
+                }
+            }
+        });
+
     }
 
     class Vh extends RecyclerView.ViewHolder {
@@ -80,6 +95,7 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
         ImageView mCover;
         TextView mTitle;
         private final TextView mTime;
+        private String id;
 
         public Vh(View itemView) {
             super(itemView);
@@ -98,6 +114,7 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
         }
 
         void setData(VideoBean bean, int position) {
+            id = bean.getId();
             itemView.setTag(position);
             ImgLoader.display(mContext, bean.getThumb(), mCover);
             mTitle.setText(bean.getTitle());
@@ -143,7 +160,8 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
             view.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    deleteVideo(id);
+                    dialog.dismiss();
                 }
             });
         }

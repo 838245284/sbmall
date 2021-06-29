@@ -432,9 +432,9 @@ public class VideoRecordActivity extends AbsActivity implements
                 mBeautyViewHolder.setEffectListener(new SimpleBeautyEffectListener() {
                     @Override
                     public void onFilterChanged(SimpleFilterBean filterBean) {
-                        if (mFilterBitmap != null) {
+                        /*if (mFilterBitmap != null) {
                             mFilterBitmap.recycle();
-                        }
+                        }*/
                         if (mRecorder != null) {
                             int filterSrc = filterBean.getFilterSrc();
                             if (filterSrc != 0) {

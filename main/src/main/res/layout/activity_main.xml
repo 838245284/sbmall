@@ -36,7 +36,7 @@
                 android:layout_weight="1"
                 app:tbn_checked="true"
                 app:tbn_icon_array_id="@array/main_tab_home"
-                app:tbn_icon_size="26dp"
+                app:tbn_icon_size="20dp"
                 app:tbn_text_color_checked="@color/global"
                 app:tbn_text_color_unchecked="@color/gray1"
                 app:tbn_text_size="11sp"
@@ -84,10 +84,10 @@
 
         <ImageView
             android:id="@+id/btn_start"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="10dp"
             android:onClick="mainClick"
             android:src="@mipmap/icon_main_start"
             />

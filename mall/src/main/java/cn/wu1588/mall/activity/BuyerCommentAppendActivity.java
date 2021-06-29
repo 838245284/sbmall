@@ -376,7 +376,7 @@ public class BuyerCommentAppendActivity extends AbsActivity implements View.OnCl
             }
         }
         if (bitmap != null) {
-            bitmap.recycle();
+//            bitmap.recycle();
         }
         return imageFile;
 

@@ -106,7 +106,7 @@ public class FrameImageView extends AppCompatImageView {
         mCurIndex = index;
         L.e("FrameImageView----index---->" + index);
         if (mBitmap != null) {
-            mBitmap.recycle();
+//            mBitmap.recycle();
         }
         mBitmap = BitmapUtil.getInstance().decodeBitmap(mImageList.get(index));
         mSrc.right = mBitmap.getWidth();

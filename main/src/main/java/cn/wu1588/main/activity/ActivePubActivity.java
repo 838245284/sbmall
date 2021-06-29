@@ -18,6 +18,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.activity.AbsActivity;
 import cn.wu1588.common.activity.ChooseImageActivity;
@@ -46,12 +52,6 @@ import cn.wu1588.main.adapter.ActiveImageAdapter;
 import cn.wu1588.main.http.MainHttpConsts;
 import cn.wu1588.main.http.MainHttpUtil;
 import cn.wu1588.main.views.ActiveRecordVoiceViewHolder2;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 发布动态
@@ -812,7 +812,7 @@ public class ActivePubActivity extends AbsActivity implements View.OnClickListen
             }
         }
         if (bitmap != null) {
-            bitmap.recycle();
+//            bitmap.recycle();
         }
         return imageFile;
 
