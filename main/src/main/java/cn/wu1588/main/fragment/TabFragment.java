@@ -36,7 +36,6 @@ import cn.wu1588.common.interfaces.OnItemClickListener;
 import cn.wu1588.common.utils.DensityUtils;
 import cn.wu1588.common.utils.DpUtil;
 import cn.wu1588.common.utils.JsonUtil;
-import cn.wu1588.common.utils.LogUtil;
 import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.main.R;
 import cn.wu1588.main.adapter.MainHomeVideoAdapter;
@@ -143,7 +142,7 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
             public List<VideoWithAds> processData(String[] info) {
                 List<VideoBean> infolist = JsonUtil.getJsonToList(Arrays.toString(info), VideoBean.class);
                 if (infolist != null && !infolist.isEmpty()) {
-                    LogUtil.e(TAG, Arrays.toString(info));
+//                    LogUtil.e(TAG, Arrays.toString(info));
                     for (VideoBean videoBean : infolist) {
                         VideoWithAds videoWithAds = new VideoWithAds();
                         videoWithAds.videoBean = videoBean;

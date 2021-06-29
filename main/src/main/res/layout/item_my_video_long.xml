@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginBottom="8dp"
+                android:visibility="gone"
                 android:background="@drawable/shape_bg_video_time"
                 android:paddingHorizontal="4dp"
                 android:paddingVertical="3dp"

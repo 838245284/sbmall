@@ -30,9 +30,7 @@ import com.tencent.rtmp.TXLivePlayer;
 import com.tencent.rtmp.TXVodPlayConfig;
 import com.tencent.rtmp.TXVodPlayer;
 import com.tencent.rtmp.ui.TXCloudVideoView;
-import com.tencent.ugc.TXVideoEditConstants;
 import com.tencent.ugc.TXVideoEditer;
-import com.tencent.ugc.TXVideoInfoReader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -639,6 +637,10 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
             ToastUtil.show(R.string.video_choose_class_2);
             return;
         }
+        /*if (TextUtils.isEmpty(mVideoTitle)) {
+            ToastUtil.show("请输入视频描述");
+            return;
+        }*/
         mBtnPub.setEnabled(false);
         mVideoTitle = mInput.getText().toString().trim();
         mLoading = DialogUitl.loadingDialog(mContext, WordUtil.getString(R.string.video_pub_ing));
@@ -712,9 +714,9 @@ public class VideoPublishActivity extends AbsActivity implements ITXVodPlayListe
                 }
             }
         }
-        if (bitmap != null) {
+        /*if (bitmap != null) {
             bitmap.recycle();
-        }
+        }*/
         if (imageFile == null) {
             ToastUtil.show(R.string.video_cover_img_failed);
             onFailed();
