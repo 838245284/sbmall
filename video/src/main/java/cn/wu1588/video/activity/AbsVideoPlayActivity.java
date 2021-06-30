@@ -279,8 +279,6 @@ public abstract class AbsVideoPlayActivity extends AbsVideoCommentActivity {
         mVideoScrollViewHolder = null;
         mMobShareUtil = null;
 
-        GSYVideoManager.releaseAllVideos();
-
     }
 
 
