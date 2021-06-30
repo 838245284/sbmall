@@ -79,7 +79,6 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
             @Override
             public void onStartPrepared(String url, Object... objects) {
                 Logger.d("开始加载");
-                Logger.d(objects);
                 if (mActionListener != null) {
                     mActionListener.onPlayLoading();
                 }
@@ -88,7 +87,6 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
             @Override
             public void onPrepared(String url, Object... objects) {
                 Logger.d("加载成功");
-                Logger.d(objects);
                 mStartPlay = true;
                 if (mActionListener != null) {
                     mContentView.postDelayed(new Runnable() {
@@ -112,6 +110,11 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
                         VideoHttpUtil.videoWatchEnd(mVideoBean.getUid(), mVideoBean.getId());
                     }
                 }
+            }
+
+            @Override
+            public void onPlayError(String url, Object... objects) {
+                Logger.d("播放失败 url=" + url);
             }
         });
 
@@ -151,12 +154,15 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         mVideoView.setUp(url, true, "");
         mVideoView.startPlayLogic();
         VideoHttpUtil.videoWatchStart(videoBean.getUid(), videoBean.getId());
+        Logger.d();
+
     }
 
     /**
      * 停止播放
      */
     public void stopPlay() {
+        Logger.d();
         if (mVideoView != null) {
             mVideoView.onVideoPause();
         }
@@ -170,6 +176,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
     }
 
     public void release() {
+        Logger.d();
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_START);
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_END);
         if (mVideoView != null) {
@@ -182,7 +189,8 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期暂停
      */
     public void pausePlay() {
-        if (mVideoView != null)
+        Logger.d();
+        if (!mClickPaused && mVideoView != null)
             mVideoView.onVideoPause();
     }
 
@@ -190,7 +198,8 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期恢复
      */
     public void resumePlay() {
-        if (mVideoView != null)
+        Logger.d();
+        if (!mClickPaused && mVideoView != null)
             mVideoView.onVideoResume();
     }
 
