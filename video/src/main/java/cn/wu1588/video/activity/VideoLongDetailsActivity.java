@@ -558,6 +558,7 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
         if (isPlay) {
             getCurPlay().release();
         }
+        GSYVideoManager.releaseAllVideos();
         //GSYPreViewManager.instance().releaseMediaPlayer();
         if (orientationUtils != null)
             orientationUtils.releaseListener();

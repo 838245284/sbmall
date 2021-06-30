@@ -24,6 +24,7 @@ import com.tencent.rtmp.ui.TXCloudVideoView;
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.glide.ImgLoader;
 import cn.wu1588.common.utils.L;
+import cn.wu1588.common.utils.Logger;
 import cn.wu1588.common.views.AbsViewHolder;
 
 import cn.wu1588.video.bean.VideoBean;
@@ -77,6 +78,8 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         mVideoView.setVideoAllCallBack(new GSYSampleCallBack() {
             @Override
             public void onStartPrepared(String url, Object... objects) {
+                Logger.d("开始加载");
+                Logger.d(objects);
                 if (mActionListener != null) {
                     mActionListener.onPlayLoading();
                 }
@@ -84,6 +87,8 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
 
             @Override
             public void onPrepared(String url, Object... objects) {
+                Logger.d("加载成功");
+                Logger.d(objects);
                 mStartPlay = true;
                 if (mActionListener != null) {
                     mContentView.postDelayed(new Runnable() {
@@ -98,6 +103,8 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
 
             @Override
             public void onAutoComplete(String url, Object... objects) {
+                Logger.d("播放完了");
+                Logger.d(objects);
                 Log.d("GSYVIDEO", "onAutoComplete url=" + url);
                 if (!mEndPlay) {
                     mEndPlay = true;
@@ -136,6 +143,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         ImgLoader.display(mContext, mVideoBean.getThumb(), mVideoCoverView);
 
         L.e("播放视频--->" + videoBean);
+        Logger.d(videoBean);
         String url = videoBean.getHref();
         if (TextUtils.isEmpty(url)) {
             return;

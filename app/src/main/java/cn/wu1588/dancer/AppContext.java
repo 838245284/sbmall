@@ -16,6 +16,7 @@ import cn.wu1588.beauty.ui.views.BeautyDataModel;
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.CommonAppContext;
 import cn.wu1588.common.bean.MeiyanConfig;
+import cn.wu1588.common.utils.AppException;
 import cn.wu1588.common.utils.DecryptUtil;
 import cn.wu1588.common.utils.L;
 import cn.wu1588.im.utils.ImMessageUtil;
@@ -59,6 +60,7 @@ public class AppContext extends CommonAppContext {
         if (BuildConfig.DEBUG) {
             ARouter.openLog();
             ARouter.openDebug();
+            AppException.getInstance().init(this);
         }
         ARouter.init(this);
 //        if (!LeakCanary.isInAnalyzerProcess(this)) {

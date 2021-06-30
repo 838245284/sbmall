@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.shuyu.gsyvideoplayer.GSYVideoManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -277,6 +278,9 @@ public abstract class AbsVideoPlayActivity extends AbsVideoCommentActivity {
         mDownloadVideoDialog = null;
         mVideoScrollViewHolder = null;
         mMobShareUtil = null;
+
+        GSYVideoManager.releaseAllVideos();
+
     }
 
 
