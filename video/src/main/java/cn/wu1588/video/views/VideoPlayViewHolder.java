@@ -174,7 +174,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期暂停
      */
     public void pausePlay() {
-        if (mVideoView != null)
+        if (!mClickPaused && mVideoView != null)
             mVideoView.onVideoPause();
     }
 
@@ -182,7 +182,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期恢复
      */
     public void resumePlay() {
-        if (mVideoView != null)
+        if (!mClickPaused && mVideoView != null)
             mVideoView.onVideoResume();
     }
 
