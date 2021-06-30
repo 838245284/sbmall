@@ -419,10 +419,16 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
             @Override
             public void onRenderSuccess(View view, float width, float height) {
 //                root.addView(ad.getExpressAdView());
-                VideoWithAds withAds = new VideoWithAds();
+                final VideoWithAds withAds = new VideoWithAds();
                 withAds.ad = ad;
                 if (mVideoScrollAdapter != null)
-                    mVideoScrollAdapter.insertBean(withAds, position);
+                    view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mVideoScrollAdapter.insertBean(withAds, position);
+                        }
+                    });
+
             }
         });
         ad.render();
