@@ -175,7 +175,7 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
                 if (mVideoLoadingBar != null) {
                     mVideoLoadingBar.setLoading(true);
                 }
-            }else{
+            } else {
                 videoPlayWrapViewHolder.addVideoView(withAds.ad.getExpressAdView());
             }
             if (needLoadMore) {
@@ -421,7 +421,8 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
 //                root.addView(ad.getExpressAdView());
                 VideoWithAds withAds = new VideoWithAds();
                 withAds.ad = ad;
-                mVideoScrollAdapter.insertBean(withAds, position);
+                if (mVideoScrollAdapter != null)
+                    mVideoScrollAdapter.insertBean(withAds, position);
             }
         });
         ad.render();
