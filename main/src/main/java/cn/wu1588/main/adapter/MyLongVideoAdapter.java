@@ -23,6 +23,7 @@ import cn.wu1588.common.utils.DensityUtils;
 
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.main.R;
+import cn.wu1588.video.activity.VideoRePublishActivity;
 import cn.wu1588.video.bean.VideoBean;
 import cn.wu1588.video.http.VideoHttpUtil;
 
@@ -96,6 +97,7 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
         TextView mTitle;
         private final TextView mTime;
         private String id;
+        private VideoBean bean;
 
         public Vh(View itemView) {
             super(itemView);
@@ -115,6 +117,7 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
 
         void setData(VideoBean bean, int position) {
             id = bean.getId();
+            this.bean = bean;
             itemView.setTag(position);
             ImgLoader.display(mContext, bean.getThumb(), mCover);
             mTitle.setText(bean.getTitle());
@@ -148,7 +151,8 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
             view.findViewById(R.id.edit).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    dialog.dismiss();
+                    VideoRePublishActivity.forward(mContext,bean);
                 }
             });
             view.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
