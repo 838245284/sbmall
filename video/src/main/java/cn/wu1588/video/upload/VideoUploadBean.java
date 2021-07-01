@@ -21,6 +21,9 @@ public class VideoUploadBean {
         mVideoFile = videoFile;
         mImageFile = imageFile;
     }
+    public VideoUploadBean(String imageUrl) {
+        mResultImageUrl = imageUrl;
+    }
 
     public File getVideoFile() {
         return mVideoFile;

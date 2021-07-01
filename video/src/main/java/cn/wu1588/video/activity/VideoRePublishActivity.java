@@ -3,8 +3,9 @@ package cn.wu1588.video.activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,7 +47,6 @@ import cn.wu1588.common.mob.MobShareUtil;
 import cn.wu1588.common.mob.ShareData;
 import cn.wu1588.common.utils.BitmapUtil;
 import cn.wu1588.common.utils.DensityUtils;
-import cn.wu1588.common.utils.DialogUitl;
 import cn.wu1588.common.utils.RouteUtil;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
@@ -59,8 +59,6 @@ import cn.wu1588.video.http.VideoHttpUtil;
 import cn.wu1588.video.upload.VideoUploadBean;
 import cn.wu1588.video.upload.VideoUploadCallback;
 import cn.wu1588.video.upload.VideoUploadQnImpl;
-import cn.wu1588.video.upload.VideoUploadStrategy;
-import cn.wu1588.video.upload.VideoUploadTxImpl;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 import top.zibin.luban.OnRenameListener;
@@ -86,26 +84,18 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
         context.startActivity(intent);
     }
 
-    private static final String TAG = "VideoPublishActivity";
-    private static final String TAG_NEW = "视频发布Test";
     private static final int REQ_CODE_GOODS = 100;
     private static final int REQ_CODE_CLASS = 101;
     private TextView mNum;
     private TextView mLocation;
-    private String mVideoPath;
-    private String mVideoPathWater;
-    private boolean mPlayStarted;//播放是否开始了
-    private boolean mPaused;//生命周期暂停
     private RecyclerView mRecyclerView;
     private ConfigBean mConfigBean;
     private VideoPubShareAdapter mAdapter;
-    private VideoUploadStrategy mUploadStrategy;
+    private VideoUploadQnImpl mUploadStrategy;
     private EditText mInput;
     private String mVideoTitle;//视频标题
     private Dialog mLoading;
     private MobShareUtil mMobShareUtil;
-    private int mSaveType;
-    private int mMusicId;
     private View mBtnPub;
     private CheckBox mCheckBox;
     private CheckBox mCheckBoxOriginal;
@@ -116,7 +106,7 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
     private int mVideoClassId;
     private int mGoodsType;//type  绑定的内容类型 0 没绑定 1 商品 2 付费内容
     private String mGoodsId;//绑定的内容Id
-    private double mVideoRatio;
+    private String coverImagePath;
 
     @Override
     protected int getLayoutId() {
@@ -146,6 +136,8 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
         });
         mNum = (TextView) findViewById(R.id.num);
         mInput = (EditText) findViewById(R.id.input);
+        mInput.setText(mVideoBean.getTitle());
+        mVideoClassId = mVideoBean.getClassid();
         mInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -211,7 +203,7 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
     }
 
 
-    private void addVideoCover(int coverItemWidth,int coverItemHeight, Bitmap bitmap) {
+    private void addVideoCover(int coverItemWidth, int coverItemHeight, Bitmap bitmap) {
         CoverBean bean = new CoverBean();
         bean.setWidth((int) coverItemWidth);
         bean.setHight((int) coverItemHeight);
@@ -231,24 +223,6 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
     }
 
 
-    private Bitmap setBitmapSize(Bitmap bitmap, int newWidth, int newHeight) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-
-        //计算压缩的比率
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-
-        //获取想要缩放的matrix
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        //获取新的bitmap
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
-        return bitmap;
-    }
-
-
     @Override
     public void onPlayEvent(TXVodPlayer txVodPlayer, int e, Bundle bundle) {
         switch (e) {
@@ -260,27 +234,23 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
 
     @Override
     public void onNetStatus(TXVodPlayer txVodPlayer, Bundle bundle) {
-
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
-        mPaused = true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mPaused = false;
     }
 
     public void release() {
         CommonHttpUtil.cancel(CommonHttpConsts.GET_CONFIG);
         VideoHttpUtil.cancel(VideoHttpConsts.GET_CONCAT_GOODS);
         VideoHttpUtil.cancel(VideoHttpConsts.SAVE_UPLOAD_VIDEO_INFO);
-        mPlayStarted = false;
         if (mVideoCoverAdapter != null && mVideoCoverAdapter.getList() != null) {
             for (CoverBean coverBean : mVideoCoverAdapter.getList()) {
                 /*if (coverBean.getBitmap() != null) {
@@ -300,20 +270,6 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
 
     @Override
     public void onBackPressed() {
-        if (mSaveType == Constants.VIDEO_SAVE_PUB) {
-            if (!TextUtils.isEmpty(mVideoPath)) {
-                File file = new File(mVideoPath);
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-            if (!TextUtils.isEmpty(mVideoPathWater)) {
-                File file = new File(mVideoPathWater);
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-        }
         release();
         VideoRePublishActivity.super.onBackPressed();
     }
@@ -331,8 +287,6 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
             publishVideo();
         } else if (i == R.id.checkbox) {
             clickCheckBox();
-        } else if (i == R.id.checkbox_original) {
-        } else if (i == R.id.checkbox_teachingl) {
         } else if (i == R.id.btn_goods_add) {
             RouteUtil.searchMallGoods(this, REQ_CODE_GOODS);
         } else if (i == R.id.btn_video_class) {
@@ -397,7 +351,8 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
                 case REQUEST_LIST_CODE:
                     try {
                         Bitmap bitmapFormUri = BitmapUtil.getBitmapFormUri(this, intent.getData());
-                        addVideoCover(400,400,bitmapFormUri);
+                        coverImagePath = getRealPathFromURI(intent.getData());
+                        addVideoCover(400, 400, bitmapFormUri);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -413,136 +368,110 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
         }
     }
 
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(contentURI, null, null, null, null);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        if (cursor == null) {
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
 
     /**
      * 发布视频
      */
     private void publishVideo() {
-        if (mConfigBean == null || TextUtils.isEmpty(mVideoPath)) {
+        if (mConfigBean == null) {
             return;
         }
         if (mVideoClassId == 0) {
             ToastUtil.show(R.string.video_choose_class_2);
             return;
         }
-        /*if (TextUtils.isEmpty(mVideoTitle)) {
-            ToastUtil.show("请输入视频描述");
-            return;
-        }*/
         mBtnPub.setEnabled(false);
         mVideoTitle = mInput.getText().toString().trim();
-        mLoading = DialogUitl.loadingDialog(mContext, WordUtil.getString(R.string.video_pub_ing));
-        mLoading.show();
+        /*mLoading = DialogUitl.loadingDialog(mContext, WordUtil.getString(R.string.video_pub_ing));
+        mLoading.show();*/
 //        mVideoRatio = originalVideoHeight / originalVideoWidth;
         Bitmap bitmap = null;
         for (CoverBean coverBean : mVideoCoverAdapter.getList()) {
             if (coverBean.isChecked())
                 bitmap = coverBean.getBitmap();
         }
-//        Bitmap bitmap = null;
-//        //生成视频封面图
-//        MediaMetadataRetriever mmr = null;
-//        try {
-//            mmr = new MediaMetadataRetriever();
-//            mmr.setDataSource(mVideoPath);
-//            bitmap = mmr.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST);
-//            String width = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);//宽
-//            String height = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);//高
-//            String rotation = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-//            double videoWidth = 0;
-//            double videoHeight = 0;
-//            if ("0".equals(rotation)) {
-//                if (!TextUtils.isEmpty(width)) {
-//                    videoWidth = Double.parseDouble(width);
-//                }
-//                if (!TextUtils.isEmpty(height)) {
-//                    videoHeight = Double.parseDouble(height);
-//                }
-//            } else {
-//                if (!TextUtils.isEmpty(height)) {
-//                    videoWidth = Double.parseDouble(height);
-//                }
-//                if (!TextUtils.isEmpty(width)) {
-//                    videoHeight = Double.parseDouble(width);
-//                }
-//            }
-//            if (videoHeight != 0 && videoWidth != 0) {
-//                mVideoRatio = videoHeight / videoWidth;
-//            }
-//        } catch (Exception e) {
-//            bitmap = null;
-//            e.printStackTrace();
-//        } finally {
-//            if (mmr != null) {
-//                mmr.release();
-//            }
-//        }
         if (bitmap == null) {
-            ToastUtil.show(R.string.video_cover_img_failed);
-            onFailed();
-            return;
-        }
-        final String coverImagePath = mVideoPath.replace(".mp4", ".jpg");
-        File imageFile = new File(coverImagePath);
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (Exception e) {
-            imageFile = null;
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            saveUploadVideoInfo(mVideoBean.getThumb());
+        } else {
+            File imageFile = new File(coverImagePath);
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                imageFile = null;
+                e.printStackTrace();
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
         /*if (bitmap != null) {
             bitmap.recycle();
         }*/
-        if (imageFile == null) {
-            ToastUtil.show(R.string.video_cover_img_failed);
-            onFailed();
-            return;
-        }
-        final File finalImageFile = imageFile;
-        //用鲁班压缩图片
-        Luban.with(this)
-                .load(finalImageFile)
-                .setFocusAlpha(false)
-                .ignoreBy(8)//8k以下不压缩
-                .setTargetDir(CommonAppConfig.VIDEO_PATH)
-                .setRenameListener(new OnRenameListener() {
-                    @Override
-                    public String rename(String filePath) {
-                        filePath = filePath.substring(filePath.lastIndexOf("/") + 1);
-                        return filePath.replace(".jpg", "_c.jpg");
-                    }
-                })
-                .setCompressListener(new OnCompressListener() {
-                    @Override
-                    public void onStart() {
-
-                    }
-
-                    @Override
-                    public void onSuccess(File file) {
-                        if (!finalImageFile.getAbsolutePath().equals(file.getAbsolutePath()) && finalImageFile.exists()) {
-                            finalImageFile.delete();
+            if (imageFile == null) {
+                ToastUtil.show(R.string.video_cover_img_failed);
+                onFailed();
+                return;
+            }
+            final File finalImageFile = imageFile;
+            //用鲁班压缩图片
+            Luban.with(this)
+                    .load(finalImageFile)
+                    .setFocusAlpha(false)
+                    .ignoreBy(8)//8k以下不压缩
+                    .setTargetDir(CommonAppConfig.VIDEO_PATH)
+                    .setRenameListener(new OnRenameListener() {
+                        @Override
+                        public String rename(String filePath) {
+                            filePath = filePath.substring(filePath.lastIndexOf("/") + 1);
+                            return filePath.replace(".jpg", "_c.jpg");
                         }
-                        uploadVideoFile(file);
-                    }
+                    })
+                    .setCompressListener(new OnCompressListener() {
+                        @Override
+                        public void onStart() {
 
-                    @Override
-                    public void onError(Throwable e) {
-                        uploadVideoFile(finalImageFile);
-                    }
-                }).launch();
+                        }
+
+                        @Override
+                        public void onSuccess(File file) {
+                            if (!finalImageFile.getAbsolutePath().equals(file.getAbsolutePath()) && finalImageFile.exists()) {
+                                finalImageFile.delete();
+                            }
+                            uploadVideoFile(file);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            uploadVideoFile(finalImageFile);
+                        }
+                    }).launch();
+        }
     }
 
     private void onFailed() {
@@ -558,25 +487,12 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
      * 上传封面图片
      */
     private void uploadVideoFile(File imageFile) {
-        if (mConfigBean.getVideoCloudType() == 1) {
-            mUploadStrategy = new VideoUploadQnImpl(mConfigBean);
-        } else {
-            mUploadStrategy = new VideoUploadTxImpl(mConfigBean);
-        }
-        VideoUploadBean videoUploadBean = new VideoUploadBean(new File(mVideoPath), imageFile);
-        if (!TextUtils.isEmpty(mVideoPathWater)) {
-            File waterFile = new File(mVideoPathWater);
-            if (waterFile.exists()) {
-                videoUploadBean.setVideoWaterFile(waterFile);
-            }
-        }
-        mUploadStrategy.upload(videoUploadBean, new VideoUploadCallback() {
+        mUploadStrategy = new VideoUploadQnImpl(mConfigBean);
+        mUploadStrategy.upload(imageFile, new VideoUploadCallback() {
             @Override
             public void onSuccess(VideoUploadBean bean) {
-                if (mSaveType == Constants.VIDEO_SAVE_PUB) {
-                    bean.deleteFile();
-                }
-                saveUploadVideoInfo(bean);
+                String thumbUrl = bean.getResultImageUrl();
+                saveUploadVideoInfo(thumbUrl);
             }
 
             @Override
@@ -590,18 +506,16 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
     /**
      * 把视频上传后的信息保存在服务器
      */
-    private void saveUploadVideoInfo(VideoUploadBean bean) {
-        VideoHttpUtil.saveUploadVideoInfo(
+    private void saveUploadVideoInfo(String thumbUrl) {
+        VideoHttpUtil.editUploadVideoInfo(
                 mVideoTitle,
-                bean.getResultImageUrl(),
-                bean.getResultVideoUrl(),
-                bean.getResultWaterVideoUrl(),
+                thumbUrl,
+                mVideoBean.getId(),
                 mGoodsId,
-                mMusicId,
+                mVideoBean.getType(),
+                mVideoBean.getMusicId(),
                 mCheckBox != null && mCheckBox.isChecked(),
                 mVideoClassId,
-                mGoodsType,
-                mVideoRatio,
                 mCheckBoxOriginal.isChecked(),
                 mCheckBoxTeachingl.isChecked(),
                 new HttpCallback() {
@@ -664,6 +578,5 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
         }
         mMobShareUtil.execute(shareType, data, null);
     }
-
 
 }

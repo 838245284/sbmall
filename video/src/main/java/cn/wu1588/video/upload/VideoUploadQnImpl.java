@@ -35,6 +35,7 @@ public class VideoUploadQnImpl implements VideoUploadStrategy {
     private UpCompletionHandler mVideoUpCompletionHandler;//视频上传回调
     private UpCompletionHandler mVideoUpCompletionHandlerWater;//水印视频上传回调
     private UpCompletionHandler mImageUpCompletionHandler;//封面图片上传回调
+    private UpCompletionHandler mEditImageUpCompletionHandler;//编辑封面图片上传回调
 //    private String mQiNiuHost;
 
 
@@ -83,6 +84,14 @@ public class VideoUploadQnImpl implements VideoUploadStrategy {
                 }
             }
         };
+        mEditImageUpCompletionHandler = new UpCompletionHandler() {
+            @Override
+            public void complete(String key, ResponseInfo info, JSONObject response) {
+                if (mVideoUploadCallback != null) {
+                    mVideoUploadCallback.onSuccess(new VideoUploadBean("http://qiniuyun.wuzhesp.com/"+key));
+                }
+            }
+        };
     }
 
     @Override
@@ -102,6 +111,27 @@ public class VideoUploadQnImpl implements VideoUploadStrategy {
                         mToken = JSON.parseObject(info[0]).getString("token");
                         L.e(TAG, "-------上传的token------>" + mToken);
                         uploadFile(mVideoUploadBean.getVideoFile(), mVideoUpCompletionHandler);
+                    }
+                }
+            }
+        });
+    }
+
+    public void upload(final File file, VideoUploadCallback callback) {
+        if (file == null || callback == null) {
+            return;
+        }
+        mVideoUploadCallback = callback;
+
+        //向内部服务器获取七牛云的token
+        VideoHttpUtil.getQiNiuToken(new HttpCallback() {
+            @Override
+            public void onSuccess(int code, String msg, String[] info) {
+                if (code == 0) {
+                    if (info.length > 0) {
+                        mToken = JSON.parseObject(info[0]).getString("token");
+                        L.e(TAG, "-------上传的token------>" + mToken);
+                        uploadFile(file, mEditImageUpCompletionHandler);
                     }
                 }
             }

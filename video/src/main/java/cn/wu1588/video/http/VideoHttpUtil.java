@@ -318,6 +318,38 @@ public class VideoHttpUtil {
                 .execute(callback);
     }
 
+    public static void editUploadVideoInfo(
+            String title,
+            String thumb,
+            String videoId,
+            String goodsId,
+            int type,
+            int musicId,
+            boolean openLocation,
+            int videoClassId,
+            boolean isOriginal,
+            boolean isTeaching,
+            HttpCallback callback) {
+        HttpClient.getInstance().get("Video.EditVideo", VideoHttpConsts.SAVE_UPLOAD_VIDEO_INFO)
+                .params("id", videoId)
+                .params("uid", CommonAppConfig.getInstance().getUid())
+                .params("token", CommonAppConfig.getInstance().getToken())
+                .params("lat", openLocation ? String.valueOf(CommonAppConfig.getInstance().getLat()) : "")
+                .params("lng", openLocation ? String.valueOf(CommonAppConfig.getInstance().getLng()) : "")
+                .params("city", openLocation ? CommonAppConfig.getInstance().getCity() : "")
+                .params("title", title)
+                .params("thumb", thumb)
+                .params("music_id", musicId)
+                .params("goodsid", goodsId)
+                .params("classid", videoClassId)
+                .params("classid", videoClassId)
+                .params("type", type)
+                .params("is_yc", isOriginal ? 1 : 2)
+                .params("is_jx", isTeaching ? 1 : 2)
+//                .params("anyway", videoRatio == 0 ? "1.778" : String.format("%.3f", videoRatio))
+                .execute(callback);
+    }
+
     /**
      * 获取腾讯云储存上传签名
      */

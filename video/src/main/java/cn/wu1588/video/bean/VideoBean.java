@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
 
 import cn.wu1588.common.bean.UserBean;
 
@@ -48,7 +47,7 @@ public class VideoBean implements Parcelable {
     private String videoclass;
     private String video_cs;
     private String isattent; // 是否关注
-    public TTNativeExpressAd ad; //
+    private int classid; // 是否关注
 
 
     public VideoBean() {
@@ -381,6 +380,7 @@ public class VideoBean implements Parcelable {
         dest.writeInt(this.attent);
         dest.writeInt(this.status);
         dest.writeInt(this.musicId);
+        dest.writeInt(this.classid);
         dest.writeString(this.mGoodsId);
         dest.writeInt(this.mType);
         dest.writeInt(this.mGoodsType);
@@ -416,6 +416,7 @@ public class VideoBean implements Parcelable {
         this.attent = source.readInt();
         this.status = source.readInt();
         this.musicId = source.readInt();
+        this.classid = source.readInt();
         this.mGoodsId = source.readString();
         this.mType = source.readInt();
         this.mGoodsType = source.readInt();
@@ -449,6 +450,7 @@ public class VideoBean implements Parcelable {
         this.step = in.readInt();
         this.like = in.readInt();
         this.attent = in.readInt();
+        this.classid = in.readInt();
         this.status = in.readInt();
         this.musicId = in.readInt();
         this.mGoodsId = in.readString();
@@ -485,5 +487,15 @@ public class VideoBean implements Parcelable {
 
     public void setVideo_cs(String video_cs) {
         this.video_cs = video_cs;
+    }
+
+    @JSONField(name = "classid")
+    public int getClassid() {
+        return classid;
+    }
+
+    @JSONField(name = "classid")
+    public void setClassid(int classid) {
+        this.classid = classid;
     }
 }
