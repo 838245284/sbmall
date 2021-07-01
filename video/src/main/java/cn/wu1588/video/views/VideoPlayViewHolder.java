@@ -47,6 +47,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
     private ObjectAnimator mPlayBtnAnimator;//暂停按钮的动画
     private VideoBean mVideoBean;
 
+    private boolean mPaused;//生命周期暂停
 
     private boolean mStartPlay;
     private boolean mClickPaused;
@@ -74,7 +75,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL);
         // 重复播放
         mVideoView.setLooping(true);
-        mVideoView.setAutoFullWithSize(true);
+//        mVideoView.setAutoFullWithSize(true);
         mVideoView.setVideoAllCallBack(new GSYSampleCallBack() {
             @Override
             public void onStartPrepared(String url, Object... objects) {
@@ -154,7 +155,6 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         mVideoView.setUp(url, true, "");
         mVideoView.startPlayLogic();
         VideoHttpUtil.videoWatchStart(videoBean.getUid(), videoBean.getId());
-        Logger.d();
 
     }
 
@@ -172,7 +172,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 循环播放
      */
     private void replay() {
-        mVideoView.startPlayLogic();
+        mVideoView.onVideoReset();
     }
 
     public void release() {
@@ -189,18 +189,29 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期暂停
      */
     public void pausePlay() {
-        Logger.d();
-        if (!mClickPaused && mVideoView != null)
+        if (mVideoView != null && !mClickPaused && !mPaused && mVideoView.isInPlayingState()
+                && mStartPlay) {
+
             mVideoView.onVideoPause();
+        }
+        mPaused = true;
+        Logger.d("生命周期暂停 mClickPaused=" + mClickPaused + ",mPaused=" + mPaused);
+//        if (!mClickPaused && mVideoView != null)
+//            mVideoView.onVideoPause();
     }
 
     /**
      * 生命周期恢复
      */
     public void resumePlay() {
-        Logger.d();
-        if (!mClickPaused && mVideoView != null)
-            mVideoView.onVideoResume();
+        Logger.d("生命周期恢复 mClickPaused=" + mClickPaused + ",mPaused=" + mPaused);
+
+        if (mPaused) {
+            if (!mClickPaused && mVideoView != null
+            && mStartPlay)
+                mVideoView.onVideoResume(false);
+        }
+        mPaused = false;
     }
 
     /**
