@@ -46,6 +46,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
     private ObjectAnimator mPlayBtnAnimator;//暂停按钮的动画
     private VideoBean mVideoBean;
 
+    private boolean mPaused;//生命周期暂停
 
     private boolean mStartPlay;
     private boolean mClickPaused;
@@ -73,7 +74,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL);
         // 重复播放
         mVideoView.setLooping(true);
-        mVideoView.setAutoFullWithSize(true);
+//        mVideoView.setAutoFullWithSize(true);
         mVideoView.setVideoAllCallBack(new GSYSampleCallBack() {
             @Override
             public void onStartPrepared(String url, Object... objects) {
@@ -105,6 +106,10 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
                         VideoHttpUtil.videoWatchEnd(mVideoBean.getUid(), mVideoBean.getId());
                     }
                 }
+            }
+
+            @Override
+            public void onPlayError(String url, Object... objects) {
             }
         });
 
@@ -143,6 +148,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         mVideoView.setUp(url, true, "");
         mVideoView.startPlayLogic();
         VideoHttpUtil.videoWatchStart(videoBean.getUid(), videoBean.getId());
+
     }
 
     /**
@@ -158,10 +164,11 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 循环播放
      */
     private void replay() {
-        mVideoView.startPlayLogic();
+        mVideoView.onVideoReset();
     }
 
     public void release() {
+
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_START);
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_END);
         if (mVideoView != null) {
@@ -174,16 +181,24 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期暂停
      */
     public void pausePlay() {
-        if (!mClickPaused && mVideoView != null)
+        if (mVideoView != null && !mClickPaused && !mPaused && mVideoView.isInPlayingState()
+                && mStartPlay) {
+
             mVideoView.onVideoPause();
+        }
+        mPaused = true;
     }
 
     /**
      * 生命周期恢复
      */
     public void resumePlay() {
-        if (!mClickPaused && mVideoView != null)
-            mVideoView.onVideoResume();
+        if (mPaused) {
+            if (!mClickPaused && mVideoView != null
+                    && mStartPlay)
+                mVideoView.onVideoResume(false);
+        }
+        mPaused = false;
     }
 
     /**
