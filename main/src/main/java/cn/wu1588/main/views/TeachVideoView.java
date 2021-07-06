@@ -195,7 +195,7 @@ public class TeachVideoView implements OnItemClickListener<VideoWithAds> {
         }
         //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
         AdSlot adSlot = new AdSlot.Builder()
-                .setCodeId("946218632")
+                .setCodeId("946127514")
                 .setExpressViewAcceptedSize(expressViewWidth, expressViewHeight) //期望模板广告view的size,单位dp
                 .setAdType(AdSlot.TYPE_FEED)
                 .setAdCount(1) //请求广告数量为1到3条

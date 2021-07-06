@@ -414,7 +414,7 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
 
     private void loadAds(final int position) {
         AdSlot adSlot = new AdSlot.Builder()
-                .setCodeId("946272856") //广告位id
+                .setCodeId("946046253") //广告位id
                 .setSupportDeepLink(true)
                 .setAdCount(3) //请求广告数量为1到3条
                 .setExpressViewAcceptedSize(DensityUtils.getScreenW(mContext), DensityUtils.getScreenH(mContext)) //期望模板广告view的size,单位dp

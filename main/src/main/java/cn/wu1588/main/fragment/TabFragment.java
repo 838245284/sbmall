@@ -260,11 +260,11 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
         if (type == 10) {
             expressViewWidth = DensityUtils.getScreenWdp(context) / 2 - 12;
             expressViewHeight = expressViewWidth * 16f / 9 + 7;
-            code = "946218632";
+            code = "946116655";
         } else {
             expressViewWidth = DensityUtils.getScreenWdp(context);
             expressViewHeight = expressViewWidth * 3f / 4;
-            code = "946243418";
+            code = "946046240";
         }
         //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
         AdSlot adSlot = new AdSlot.Builder()

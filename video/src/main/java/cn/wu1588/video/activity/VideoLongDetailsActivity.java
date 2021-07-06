@@ -245,7 +245,17 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
 
             @Override
             public void onLoadMoreSuccess(List<VideoWithAds> loadItemList, int loadItemCount) {
-
+                String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+                if(TextUtils.equals(stringValue,"1")){
+                    int space =  5;
+                    int size = loadItemList.size();
+                    for (int i = 0; i < size; i += space) {
+                        int position = mAdapter.getList().indexOf(loadItemList.get(i));
+                        if (i != 0 && i % space == 0) {
+                            loadListAd(space, position);
+                        }
+                    }
+                }
             }
 
             @Override
@@ -268,10 +278,10 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
             expressViewWidth = DensityUtils.getScreenWdp(mContext);
             expressViewHeight = expressViewWidth * 3f /4;
             if(position == 0){
-                code = "946298218";
+                code = "946111197";
                 expressViewHeight = 0;
             }else{
-                code = "946243418";
+                code = "946127514";
             }
         }
         //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
