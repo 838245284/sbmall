@@ -19,7 +19,7 @@ import cn.wu1588.common.glide.ImgLoader;
 import cn.wu1588.common.utils.CommonIconUtil;
 import cn.wu1588.common.utils.DpUtil;
 import cn.wu1588.common.utils.WordUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.ImUserBean;
 
 import java.util.ArrayList;

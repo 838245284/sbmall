@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupWindow;
 
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.common.utils.DpUtil;
 
 /**

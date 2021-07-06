@@ -77,10 +77,14 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
     private RecyclerView mRecyclerCover;
     private VideoBean mVideoBean;
     private ImageView ivCover;
+    private String is_jx;
+    private String is_yc;
 
-    public static void forward(Context context, VideoBean videoBean) {
+    public static void forward(Context context, VideoBean videoBean, String is_jx, String is_yc) {
         Intent intent = new Intent(context, VideoRePublishActivity.class);
         intent.putExtra(Constants.VIDEO_BEAN, videoBean);
+        intent.putExtra("is_jx", is_jx);
+        intent.putExtra("is_yc", is_yc);
         context.startActivity(intent);
     }
 
@@ -119,6 +123,8 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
         setTitle(WordUtil.getString(R.string.video_pub));
         Intent intent = getIntent();
         mVideoBean = intent.getParcelableExtra(Constants.VIDEO_BEAN);
+        is_jx = intent.getStringExtra("is_jx");
+        is_yc = intent.getStringExtra("is_yc");
         mBtnPub = findViewById(R.id.btn_pub);
         mBtnPub.setOnClickListener(this);
         mRecyclerView = findViewById(R.id.recyclerView);
@@ -166,7 +172,8 @@ public class VideoRePublishActivity extends AbsActivity implements ITXVodPlayLis
         mCheckBoxOriginal.setOnClickListener(this);
         mCheckBoxTeachingl = findViewById(R.id.checkbox_teachingl);
         mCheckBoxTeachingl.setOnClickListener(this);
-
+        mCheckBoxTeachingl.setChecked("1".equals(is_jx));
+        mCheckBoxOriginal.setChecked("1".equals(is_yc));
         mBtnGoodsAdd = findViewById(R.id.btn_goods_add);
         mVideoClassName = findViewById(R.id.video_class_name);
         mGoodsName = findViewById(R.id.goods_name);

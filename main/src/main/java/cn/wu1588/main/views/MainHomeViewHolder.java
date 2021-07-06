@@ -6,13 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import cn.wu1588.common.custom.HomeIndicatorTitle;
-import cn.wu1588.common.utils.WordUtil;
-import cn.wu1588.main.R;
-
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.ColorTransitionPagerTitleView;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.SimplePagerTitleView;
+
+import cn.wu1588.common.custom.HomeIndicatorTitle;
+import cn.wu1588.common.utils.WordUtil;
+import cn.wu1588.main.R;
 
 /**
  * Created by cxf on 2018/9/22.
@@ -42,7 +42,6 @@ public class MainHomeViewHolder extends AbsMainHomeParentViewHolder {
     @Override
     public void init() {
         setStatusHeight();
-//        mIcons = new ImageView[4];
         super.init();
 
     }
@@ -73,10 +72,7 @@ public class MainHomeViewHolder extends AbsMainHomeParentViewHolder {
                 } else if (position == 2) {
                     mLiveViewHolder = new MainHomeLiveViewHolder(mContext, parent);
                     vh = mLiveViewHolder;
-                } /*else if (position == 3) {
-                    mNearViewHolder = new MainHomeNearViewHolder(mContext, parent);
-                    vh = mNearViewHolder;
-                }*/
+                }
                 if (vh == null) {
                     return;
                 }
@@ -88,22 +84,6 @@ public class MainHomeViewHolder extends AbsMainHomeParentViewHolder {
         if (vh != null) {
             vh.loadData();
         }
-        /*if (mIcons != null) {
-            for (int i = 0, len = mIcons.length; i < len; i++) {
-                View v = mIcons[i];
-                if (v != null) {
-                    if (i == position) {
-                        if (v.getVisibility() != View.VISIBLE) {
-                            v.setVisibility(View.VISIBLE);
-                        }
-                    } else {
-                        if (v.getVisibility() == View.VISIBLE) {
-                            v.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }
-            }
-        }*/
     }
 
     @Override
@@ -141,28 +121,6 @@ public class MainHomeViewHolder extends AbsMainHomeParentViewHolder {
                 }
             }
         });
-
-        /*ImageView imageView = mIcons[index];
-        if (imageView == null) {
-            imageView = new ImageView(mContext);
-            int dp14 = DpUtil.dp2px(14);
-            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(dp14, dp14);
-            lp.topMargin = DpUtil.dp2px(5);
-            lp.gravity = Gravity.RIGHT;
-            imageView.setLayoutParams(lp);
-            if (index == 0) {
-                imageView.setImageResource(R.mipmap.icon_home_top_follow);
-            } else if (index == 1) {
-                imageView.setImageResource(R.mipmap.icon_home_top_live);
-            } else if (index == 2) {
-                imageView.setImageResource(R.mipmap.icon_home_top_video);
-            } else if (index == 3) {
-                imageView.setImageResource(R.mipmap.icon_home_top_near);
-            }
-            imageView.setVisibility(View.INVISIBLE);
-            mIcons[index] = imageView;
-            indicatorTitle.addView(imageView);
-        }*/
 
         return indicatorTitle;
     }

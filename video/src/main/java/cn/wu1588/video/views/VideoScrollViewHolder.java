@@ -1,10 +1,13 @@
 package cn.wu1588.video.views;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,9 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.wu1588.common.Constants;
 import cn.wu1588.common.event.FollowEvent;
 import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.utils.DensityUtils;
+import cn.wu1588.common.utils.RandomUtil;
 import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.views.AbsViewHolder;
@@ -68,6 +73,12 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
     private VideoBean mVideoBean;
     private boolean mPaused;//生命周期暂停
     private TTAdNative mTTAdNative;
+    Handler handler = new Handler(Looper.getMainLooper());
+    List<TTNativeExpressAd> adList = new ArrayList<>();
+    private List<VideoBean> list;
+    SparseArray<View> adViewMap = new SparseArray<>();
+    private View llybot;
+    private String adValue;
 
     public VideoScrollViewHolder(Context context, ViewGroup parentView, int position, String videoKey, int page) {
         super(context, parentView, position, videoKey, page);
@@ -87,22 +98,20 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
 
     @Override
     public void init() {
-        List<VideoBean> list = VideoStorge.getInstance().get(mVideoKey);
+        list = VideoStorge.getInstance().get(mVideoKey);
         if (list == null || list.size() == 0) {
             return;
         }
         List<VideoWithAds> adsList = convertList(list);
         mVideoScrollAdapter = new VideoScrollAdapter(mContext, adsList, mPosition);
         initAds();
-        String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
-        if (TextUtils.equals(stringValue, "1")) {
-            int size = list.size();
-            for (int i = 0; i < size; i += 5) {
-                if (i != 0 && i % 5 == 0) {
-                    loadAds(i);
-                }
+        adValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+        if (TextUtils.equals(adValue, "1")) {
+            for (int i = 0; i < 3; i++) {
+                loadAds(i);
             }
         }
+        llybot = findViewById(R.id.llybot);
         mVideoPlayViewHolder = new VideoPlayViewHolder(mContext, null);
         mVideoPlayViewHolder.setActionListener(this);
         mPlayView = mVideoPlayViewHolder.getContentView();
@@ -157,29 +166,60 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
                 }
             }
         };
-        mVideoDataHelper = VideoStorge.getInstance().getDataHelper(mVideoKey);
+        mVideoDataHelper = VideoStorge.getInstance().getDataHelper(Constants.VIDEO_HOME);
     }
 
 
     @Override
-    public void onPageSelected(VideoPlayWrapViewHolder videoPlayWrapViewHolder, boolean needLoadMore) {
+    public void onPageSelected(VideoPlayWrapViewHolder videoPlayWrapViewHolder, boolean needLoadMore, int scrollIndex) {
         if (videoPlayWrapViewHolder != null) {
             VideoWithAds withAds = videoPlayWrapViewHolder.getVideoBean();
-            if (withAds.videoBean != null) {
-                mVideoBean = withAds.videoBean;
-                mVideoPlayWrapViewHolder = videoPlayWrapViewHolder;
+            mVideoBean = withAds.videoBean;
+            if (mVideoBean == null || TextUtils.isEmpty(mVideoBean.getHref())) {
+                mVideoBean = getValidateVideoBean();
+            }
+            mVideoPlayWrapViewHolder = videoPlayWrapViewHolder;
+            if (TextUtils.equals(adValue, "1") && scrollIndex % 7 == 0 && !adList.isEmpty()) {
+                View view = adViewMap.get(scrollIndex);
+                llybot.setVisibility(View.GONE);
+                mVideoLoadingBar.setVisibility(View.GONE);
+                videoPlayWrapViewHolder.showAd(true);
+                if (view != null) {
+                    videoPlayWrapViewHolder.addVideoView(view);
+                } else {
+                    int i = RandomUtil.nextInt(adList.size());
+                    View expressAdView = adList.get(i).getExpressAdView();
+                    adViewMap.put(scrollIndex, expressAdView);
+                    videoPlayWrapViewHolder.addVideoView(expressAdView);
+                }
+            } else {
+                llybot.setVisibility(View.VISIBLE);
+                mVideoLoadingBar.setVisibility(View.VISIBLE);
+                videoPlayWrapViewHolder.showAd(false);
                 videoPlayWrapViewHolder.addVideoView(mPlayView);
                 if (mVideoPlayViewHolder != null) {
-                    mVideoPlayViewHolder.startPlay(withAds.videoBean);
+                    mVideoPlayViewHolder.startPlay(mVideoBean);
                 }
                 if (mVideoLoadingBar != null) {
                     mVideoLoadingBar.setLoading(true);
                 }
-            } else {
-                videoPlayWrapViewHolder.addVideoView(withAds.ad.getExpressAdView());
             }
-            if (needLoadMore) {
-                onLoadMore();
+        }
+            /*else {
+                videoPlayWrapViewHolder.addVideoView(withAds.ad.getExpressAdView());
+            }*/
+        if (needLoadMore) {
+            onLoadMore();
+        }
+    }
+
+    private VideoBean getValidateVideoBean() {
+        while (true) {
+            int i = RandomUtil.nextInt(list.size());
+            VideoBean bean = list.get(i);
+            String href = bean.getHref();
+            if (!TextUtils.isEmpty(href)) {
+                return list.get(i);
             }
         }
     }
@@ -376,7 +416,7 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
         AdSlot adSlot = new AdSlot.Builder()
                 .setCodeId("946272856") //广告位id
                 .setSupportDeepLink(true)
-                .setAdCount(1) //请求广告数量为1到3条
+                .setAdCount(3) //请求广告数量为1到3条
                 .setExpressViewAcceptedSize(DensityUtils.getScreenW(mContext), DensityUtils.getScreenH(mContext)) //期望模板广告view的size,单位dp
                 .build();
         mTTAdNative.loadExpressDrawFeedAd(adSlot, new TTAdNative.NativeExpressAdListener() {
@@ -419,16 +459,14 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
             @Override
             public void onRenderSuccess(View view, float width, float height) {
 //                root.addView(ad.getExpressAdView());
-                final VideoWithAds withAds = new VideoWithAds();
-                withAds.ad = ad;
-                if (mVideoScrollAdapter != null)
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mVideoScrollAdapter.insertBean(withAds, position);
-                        }
-                    });
-
+                adList.add(ad);
+                /*if (mVideoScrollAdapter != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mVideoScrollAdapter.insertBean(withAds, position);
+                    }
+                });*/
             }
         });
         ad.render();

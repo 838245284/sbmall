@@ -7,7 +7,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import cn.wu1588.common.dialog.AbsDialogFragment;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.common.utils.DpUtil;
 import cn.wu1588.im.views.SystemMessageViewHolder;
 

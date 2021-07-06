@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.myylook.im">
+          package="cn.wu1588.im">
 
 
     <!--接三方的时候,修改这里的包名-->
@@ -16,26 +16,26 @@
         >
 
         <activity
-            android:name="com.myylook.im.cn.myylook.im.activity.ChatActivity"
+            android:name=".activity.ChatActivity"
             android:screenOrientation="portrait"
             />
 
         <activity
-            android:name="com.myylook.im.cn.myylook.im.activity.SystemMessageActivity"
+            android:name=".activity.SystemMessageActivity"
             android:screenOrientation="portrait"
             />
         <activity
-            android:name="com.myylook.im.cn.myylook.im.activity.ChatRoomActivity"
+            android:name=".activity.ChatRoomActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             />
         <activity
-            android:name="com.myylook.im.cn.myylook.im.activity.LocationActivity"
+            android:name=".activity.LocationActivity"
             android:screenOrientation="portrait"
             />
         <activity
-            android:name="com.myylook.im.cn.myylook.im.activity.ChatChooseImageActivity"
+            android:name=".activity.ChatChooseImageActivity"
             android:screenOrientation="portrait"
             />
 
@@ -125,7 +125,7 @@
 
         <!--极光推送-->
         <receiver
-            android:name="com.myylook.im.cn.myylook.im.receiver.JPushReceiver"
+            android:name=".receiver.JPushReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>

@@ -20,7 +20,7 @@ import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
 import cn.wu1588.common.views.AbsViewHolder;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.activity.SystemMessageActivity;
 import cn.wu1588.im.adapter.ImListAdapter;
 import cn.wu1588.im.bean.ImUserBean;

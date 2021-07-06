@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,17 +19,18 @@ import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.bytedance.sdk.openadsdk.TTAdDislike;
 import com.bytedance.sdk.openadsdk.TTAppDownloadListener;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
-import cn.wu1588.common.adapter.RefreshAdapter;
-import cn.wu1588.common.bean.UserBean;
-import cn.wu1588.common.glide.ImgLoader;
-import cn.wu1588.common.views.DislikeDialog;
-import cn.wu1588.main.R;
-
-import cn.wu1588.video.bean.VideoWithAds;
 
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import cn.wu1588.common.adapter.RefreshAdapter;
+import cn.wu1588.common.bean.UserBean;
+import cn.wu1588.common.glide.ImgLoader;
+import cn.wu1588.common.utils.DateFormatUtil;
+import cn.wu1588.common.views.DislikeDialog;
+import cn.wu1588.main.R;
+import cn.wu1588.video.bean.VideoWithAds;
 
 /**
  * Created by cxf on 2018/9/26.
@@ -139,6 +141,7 @@ public class MainHomeVideoAdapter extends RefreshAdapter<VideoWithAds> {
         protected void setData(VideoWithAds bean, int position, Object payload) {
             itemView.setTag(position);
             ImgLoader.display(mContext, bean.videoBean.getThumb(), mCover);
+            Log.e("setData", "setData: "+bean.videoBean.getThumb() );
             mTitle.setText(bean.videoBean.getTitle());
             mNum.setText(bean.videoBean.getViewNum());
             UserBean userBean = bean.videoBean.getUserBean();
@@ -192,7 +195,7 @@ public class MainHomeVideoAdapter extends RefreshAdapter<VideoWithAds> {
                 mTopic.setText(userBean.getSignature());
             }
 
-            mTopic.setText(bean.videoBean.getCity()); //
+            mTopic.setText(bean.videoBean.getSignature()); //
             mCollectionNum.setText(bean.videoBean.getCommentNum()); //
             mLikeNum.setText(bean.videoBean.getLikeNum());
             mTag.setText(bean.videoBean.getLikeNum());  //
@@ -200,7 +203,14 @@ public class MainHomeVideoAdapter extends RefreshAdapter<VideoWithAds> {
             mCollectionNum.setText(bean.videoBean.getSc_count());
             mLikeNum.setText(bean.videoBean.getLikeNum());
             mTag.setText(bean.videoBean.getVideoclass());
-            mTime.setText(bean.videoBean.getVideo_time());
+            String video_time = bean.videoBean.getVideo_time();
+            try {
+                long time = Long.parseLong(video_time);
+                String s = DateFormatUtil.FormatRunTime(time);
+                mTime.setText(s);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
     }
 

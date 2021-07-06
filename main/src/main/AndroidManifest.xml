@@ -9,9 +9,13 @@
             android:theme="@style/dialog2" />
         <activity
             android:name=".activity.LoginActivity"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MallActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.UserHomeActivity"

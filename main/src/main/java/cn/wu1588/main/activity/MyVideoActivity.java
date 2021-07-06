@@ -7,18 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import cn.wu1588.common.CommonAppConfig;
-import cn.wu1588.common.activity.AbsActivity;
-import cn.wu1588.common.adapter.ViewPagerAdapter;
-import cn.wu1588.common.utils.DpUtil;
-import cn.wu1588.common.utils.WordUtil;
-import cn.wu1588.live.views.AbsUserHomeViewHolder;
-
-import cn.wu1588.main.R;
-
-import cn.wu1588.main.views.MyLongVideoViewHolder;
-import cn.wu1588.main.views.VideoHomeViewHolder;
-
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
@@ -31,6 +19,16 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.Simple
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.wu1588.common.CommonAppConfig;
+import cn.wu1588.common.activity.AbsActivity;
+import cn.wu1588.common.adapter.ViewPagerAdapter;
+import cn.wu1588.common.utils.DpUtil;
+import cn.wu1588.common.utils.WordUtil;
+import cn.wu1588.live.views.AbsUserHomeViewHolder;
+import cn.wu1588.main.R;
+import cn.wu1588.main.views.MyLongVideoViewHolder;
+import cn.wu1588.main.views.VideoHomeViewHolder;
 
 /**
  * Created by cxf on 2018/12/14.
@@ -53,6 +51,8 @@ public class MyVideoActivity extends AbsActivity {
     protected int getLayoutId() {
         return R.layout.activity_my_video;
     }
+
+
 
     @Override
     protected void main() {

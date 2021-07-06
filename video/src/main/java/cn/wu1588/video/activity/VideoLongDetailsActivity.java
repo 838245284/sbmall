@@ -49,6 +49,7 @@ import cn.wu1588.common.utils.DensityUtils;
 import cn.wu1588.common.utils.JsonUtil;
 import cn.wu1588.common.utils.RouteUtil;
 import cn.wu1588.common.utils.SpUtil;
+import cn.wu1588.common.utils.StatusBarUtil;
 import cn.wu1588.common.utils.TextViewUtils;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.live.dialog.LiveGiftDialogFragment;
@@ -108,6 +109,10 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
         return R.layout.activity_video_long_details;
     }
 
+    @Override
+    protected void setStatusBar() {
+        StatusBarUtil.setStatusBarColor(this,R.color.black);
+    }
 
     @Override
     protected void main() {
@@ -226,6 +231,9 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
                         if (i != 0 && i % space == 0) {
                             loadListAd(space, i);
                         }
+                        if(i==0){
+                            loadListAd(space, 0);
+                        }
                     }
                 }
             }
@@ -259,7 +267,12 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
         }else{
             expressViewWidth = DensityUtils.getScreenWdp(mContext);
             expressViewHeight = expressViewWidth * 3f /4;
-            code = "946243418";
+            if(position == 0){
+                code = "946298218";
+                expressViewHeight = 0;
+            }else{
+                code = "946243418";
+            }
         }
         //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
         AdSlot adSlot = new AdSlot.Builder()
@@ -267,6 +280,7 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
                 .setExpressViewAcceptedSize(expressViewWidth, expressViewHeight) //期望模板广告view的size,单位dp
                 .setAdType(AdSlot.TYPE_FEED)
                 .setAdCount(1) //请求广告数量为1到3条
+                .setSupportDeepLink(true)
                 .build();
         //step5:请求广告，调用feed广告异步请求接口，加载到广告后，拿到广告素材自定义渲染
         mTTAdNative.loadNativeExpressAd(adSlot, new TTAdNative.NativeExpressAdListener() {

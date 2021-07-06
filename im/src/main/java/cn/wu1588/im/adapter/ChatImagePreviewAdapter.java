@@ -16,7 +16,7 @@ import cn.wu1588.common.utils.ClickUtil;
 import cn.wu1588.common.utils.DialogUitl;
 import cn.wu1588.common.utils.StringUtil;
 import cn.wu1588.common.utils.ToastUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.ImMessageBean;
 import cn.wu1588.im.custom.MyImageView2;
 import cn.wu1588.im.utils.ImMessageUtil;

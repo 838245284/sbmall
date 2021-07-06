@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import cn.wu1588.common.Constants;
-import com.myylook.im.R;
 import cn.wu1588.common.adapter.RefreshAdapter;
 import cn.wu1588.common.bean.TxLocationPoiBean;
-
-import java.util.List;
+import cn.wu1588.im.R;
 
 /**
  * Created by cxf on 2018/7/18.

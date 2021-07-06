@@ -32,14 +32,13 @@
             android:layout_width="wrap_content"
             android:paddingRight="11dp"
             android:paddingLeft="11dp"
-            android:layout_height="35dp">
+            android:layout_height="match_parent">
 
             <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:layout_gravity="center"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:src="@mipmap/ic_main_video_more"
-                />
+                android:src="@mipmap/ic_main_video_more" />
         </FrameLayout>
 
     </LinearLayout>
@@ -50,13 +49,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <!--<android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView_class"
-        android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@color/white"
-        android:overScrollMode="never" />-->
 </LinearLayout>
 

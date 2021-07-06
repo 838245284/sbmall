@@ -10,7 +10,7 @@ import cn.wu1588.common.adapter.RefreshAdapter;
 import cn.wu1588.common.custom.CommonRefreshView;
 import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.views.AbsViewHolder;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.adapter.SystemMessageAdapter;
 import cn.wu1588.im.bean.SystemMessageBean;
 import cn.wu1588.im.http.ImHttpConsts;

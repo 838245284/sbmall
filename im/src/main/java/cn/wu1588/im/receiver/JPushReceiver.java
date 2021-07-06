@@ -9,7 +9,7 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 
 import org.greenrobot.eventbus.EventBus;
 

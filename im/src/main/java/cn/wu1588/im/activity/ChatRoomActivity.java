@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.activity.AbsActivity;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.common.bean.UserBean;
 import cn.wu1588.im.dialog.ChatVoiceInputDialog;
 import cn.wu1588.common.interfaces.ActivityResultCallback;

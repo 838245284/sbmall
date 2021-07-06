@@ -99,7 +99,7 @@ public class TabButton extends LinearLayout {
         setGravity(Gravity.CENTER_HORIZONTAL);
         mImg = new ImageView(mContext);
         LayoutParams params1 = new LayoutParams(mIconSize, mIconSize);
-        params1.setMargins(0, dp2px(8), 0, 0);
+        params1.setMargins(0, dp2px(10), 0, 0);
         mImg.setLayoutParams(params1);
         if (mDrawables != null && mDrawaleArrayLength > 0) {
             if (mChecked) {
@@ -110,6 +110,7 @@ public class TabButton extends LinearLayout {
         }
         mText = new TextView(mContext);
         LayoutParams params2 = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params2.setMargins(0, dp2px(4), 0, 0);
         mText.setLayoutParams(params2);
         mText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
         mText.setText(mTip);

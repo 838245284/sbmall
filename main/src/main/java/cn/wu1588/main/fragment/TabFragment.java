@@ -22,6 +22,8 @@ import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +45,8 @@ import cn.wu1588.video.activity.VideoLongDetailsActivity;
 import cn.wu1588.video.activity.VideoPlayActivity;
 import cn.wu1588.video.bean.VideoBean;
 import cn.wu1588.video.bean.VideoWithAds;
+import cn.wu1588.video.event.VideoDeleteEvent;
+import cn.wu1588.video.event.VideoScrollPageEvent;
 import cn.wu1588.video.http.VideoHttpConsts;
 import cn.wu1588.video.http.VideoHttpUtil;
 import cn.wu1588.video.interfaces.VideoScrollDataHelper;
@@ -71,7 +75,7 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
 
     private static final String TAG = "TabFragment";
     private String index;
-    private List<VideoWithAds> list = new ArrayList<>();
+    //    private List<VideoWithAds> list = new ArrayList<>();
     private Context context;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private TTAdNative mTTAdNative;
@@ -141,17 +145,17 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
             @Override
             public List<VideoWithAds> processData(String[] info) {
                 List<VideoBean> infolist = JsonUtil.getJsonToList(Arrays.toString(info), VideoBean.class);
+                List<VideoWithAds> processList = new ArrayList<>();
                 if (infolist != null && !infolist.isEmpty()) {
 //                    LogUtil.e(TAG, Arrays.toString(info));
                     for (VideoBean videoBean : infolist) {
                         VideoWithAds videoWithAds = new VideoWithAds();
                         videoWithAds.videoBean = videoBean;
                         videoWithAds.itemType = mItemType;
-                        list.add(videoWithAds);
+                        processList.add(videoWithAds);
                     }
-                    VideoStorge.getInstance().put(String.valueOf(index), infolist);
                 }
-                return list;
+                return processList;
 
             }
 
@@ -160,8 +164,9 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
                 if (list == null || list.isEmpty()) {
                     return;
                 }
+                VideoStorge.getInstance().put(String.valueOf(index), adsToVideo(list));
                 String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
-                if(TextUtils.equals(stringValue,"1")){
+                if (TextUtils.equals(stringValue, "1")) {
                     int space = list.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
                     int size = list.size();
                     for (int i = 0; i < size; i += space) {
@@ -179,8 +184,22 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
 
             @Override
             public void onLoadMoreSuccess(List<VideoWithAds> loadItemList, int loadItemCount) {
+                List<VideoBean> beans = VideoStorge.getInstance().get(index);
+                beans.addAll(adsToVideo(loadItemList));
+                VideoStorge.getInstance().put(String.valueOf(index), beans);
 //                loadListAd();
-                Log.e(TAG, "onLoadMoreSuccess: "+loadItemList.size()+"  "+loadItemCount );
+//                Log.e(TAG, "onLoadMoreSuccess: "+loadItemList.size()+"  "+loadItemCount );
+                String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+                if(TextUtils.equals(stringValue,"1")){
+                    int space = loadItemList.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
+                    int size = loadItemList.size();
+                    for (int i = 0; i < size; i += space) {
+                        int position = mAdapter.getList().indexOf(loadItemList.get(i));
+                        if (i != 0 && i % space == 0) {
+                            loadListAd(space, position);
+                        }
+                    }
+                }
             }
 
             @Override
@@ -188,8 +207,45 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
 
             }
         });
+        EventBus.getDefault().register(this);
     }
 
+    private List<VideoBean> adsToVideo(List<VideoWithAds> list){
+        List<VideoBean> videoBeans = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            VideoBean videoBean = list.get(i).videoBean;
+            videoBeans.add(videoBean);
+        }
+        return videoBeans;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onVideoScrollPageEvent(VideoScrollPageEvent e) {
+        if (Constants.VIDEO_HOME.equals(e.getKey()) && mRefreshView != null) {
+            mRefreshView.setPageCount(e.getPage());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onVideoDeleteEvent(VideoDeleteEvent e) {
+        if (mAdapter != null) {
+            mAdapter.deleteVideo(e.getVideoId());
+            if (mAdapter.getItemCount() == 0 && mRefreshView != null) {
+                mRefreshView.showEmpty();
+            }
+        }
+    }
+
+    private List<VideoWithAds> videoToAds(List<VideoBean> list){
+        List<VideoWithAds> adsList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            VideoWithAds videoWithAds = new VideoWithAds();
+            videoWithAds.videoBean = list.get(i);
+            videoWithAds.itemType = mItemType;
+            adsList.add(videoWithAds);
+        }
+        return adsList;
+    }
     private void initAds() {
 
         mTTAdNative = TTAdSdk.getAdManager().createAdNative(context);
@@ -201,13 +257,13 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
         float expressViewWidth;
         float expressViewHeight;
         String code;
-        if(type==10){
+        if (type == 10) {
             expressViewWidth = DensityUtils.getScreenWdp(context) / 2 - 12;
             expressViewHeight = expressViewWidth * 16f / 9 + 7;
             code = "946218632";
-        }else{
+        } else {
             expressViewWidth = DensityUtils.getScreenWdp(context);
-            expressViewHeight = expressViewWidth * 3f /4;
+            expressViewHeight = expressViewWidth * 3f / 4;
             code = "946243418";
         }
         //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
@@ -221,25 +277,24 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
         mTTAdNative.loadNativeExpressAd(adSlot, new TTAdNative.NativeExpressAdListener() {
             @Override
             public void onError(int code, String message) {
-                Log.e(TAG, "onError: "+message );
+                Log.e(TAG, "onError: " + message);
             }
 
             @Override
             public void onNativeExpressAdLoad(final List<TTNativeExpressAd> ads) {
-                if (list != null) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            bindAdListener(ads, position);
-                        }
-                    });
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        bindAdListener(ads, position);
+                    }
+                });
 
-                }
             }
         });
     }
 
     private void bindAdListener(final List<TTNativeExpressAd> ads, int position) {
+        List<VideoBean> beans = VideoStorge.getInstance().get(index);
         for (int i = 0; i < ads.size(); i++) {
             VideoWithAds videoWithAds = new VideoWithAds();
             TTNativeExpressAd ad = ads.get(i);
@@ -247,8 +302,10 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
             videoWithAds.itemType = VideoWithAds.ITEM_TYPE_Ads;
             List<VideoWithAds> adapterList = mAdapter.getList();
             adapterList.add(position, videoWithAds);
+            beans.add(position, new VideoBean());
             ad.render();
         }
+        VideoStorge.getInstance().put(index, beans);
         mAdapter.notifyDataSetChanged();
 
        /* ad.setExpressInteractionListener(new TTNativeExpressAd.ExpressAdInteractionListener() {
@@ -295,7 +352,7 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
     public void onItemClick(VideoWithAds bean, int position) {
         if (bean.itemType == VideoWithAds.ITEM_TYPE_LONG_VIDEO) {
             VideoLongDetailsActivity.forward(getContext(), bean.videoBean);
-        }else{
+        } else {
             int page = 1;
             if (mRefreshView != null) {
                 page = mRefreshView.getPageCount();

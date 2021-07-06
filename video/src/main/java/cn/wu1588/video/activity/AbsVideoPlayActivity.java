@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.text.TextUtils;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.alibaba.fastjson.JSON;
@@ -61,7 +62,8 @@ public abstract class AbsVideoPlayActivity extends AbsVideoCommentActivity {
     @Override
     protected void main() {
         super.main();
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         CommonAppConfig.getInstance().getConfig(new CommonCallback<ConfigBean>() {
             @Override
             public void callback(ConfigBean bean) {

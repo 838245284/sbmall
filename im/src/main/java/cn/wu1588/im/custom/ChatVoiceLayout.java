@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.ImMessageBean;
 
 /**

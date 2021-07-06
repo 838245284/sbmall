@@ -37,6 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="140dp"
                     android:paddingTop="8dp"
+                    android:textStyle="bold"
                     android:textColor="#ff000000"
                     android:textSize="18sp" />
 
@@ -179,8 +180,8 @@
 
             <ImageView
                 android:id="@+id/edit"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="155dp"
                 android:layout_marginRight="30dp"
@@ -190,6 +191,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:layout_marginTop="20dp">
 
             <LinearLayout
@@ -201,8 +204,8 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/yuan"
                     android:scaleType="centerInside"
                     android:src="@mipmap/msg" />
@@ -210,7 +213,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:text="消息"
                     android:textColor="#ff191919"
                     android:textSize="14sp" />
@@ -225,8 +228,8 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/yuan"
                     android:scaleType="centerInside"
                     android:src="@mipmap/wallet" />
@@ -234,7 +237,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:text="钱包"
                     android:textColor="#ff191919"
                     android:textSize="14sp" />
@@ -249,8 +252,8 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/yuan"
                     android:scaleType="centerInside"
                     android:src="@mipmap/mingxi" />
@@ -258,7 +261,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:text="明细"
                     android:textColor="#ff191919"
                     android:textSize="14sp" />
@@ -273,8 +276,8 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@mipmap/yuan"
                     android:scaleType="centerInside"
                     android:src="@mipmap/daoju" />
@@ -282,7 +285,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:text="道具"
                     android:textColor="#ff191919"
                     android:textSize="14sp" />
@@ -320,8 +323,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/my_video" />
 
@@ -342,8 +345,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/my_dongtai" />
 
@@ -364,8 +367,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/shouyi" />
 
@@ -386,8 +389,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/buy_center" />
 
@@ -415,8 +418,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/renzheng" />
 
@@ -437,8 +440,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/meiri_risk" />
 
@@ -459,8 +462,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/pay_content" />
 
@@ -481,8 +484,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/my_xiaodian" />
 
@@ -532,8 +535,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/room_guanli" />
 
@@ -554,8 +557,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/zhuangbei" />
 
@@ -563,6 +566,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="装备中心"
+                        android:layout_marginTop="4dp"
+                        android:textColor="#ff191919"
+                        android:textSize="14sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/familicenter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:scaleType="centerInside"
+                        android:src="@mipmap/famili_center" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="家族中心"
                         android:layout_marginTop="4dp"
                         android:textColor="#ff191919"
                         android:textSize="14sp" />
@@ -576,8 +601,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/my_level" />
 
@@ -589,6 +614,14 @@
                         android:textColor="#ff191919"
                         android:textSize="14sp" />
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
+                android:layout_marginTop="25dp">
                 <LinearLayout
                     android:id="@+id/invite_award"
                     android:layout_width="0dp"
@@ -598,8 +631,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/invite_award" />
 
@@ -611,14 +644,50 @@
                         android:textColor="#ff191919"
                         android:textSize="14sp" />
                 </LinearLayout>
-            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/online"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="25dp"
-                android:layout_marginTop="25dp">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:scaleType="centerInside"
+                        android:src="@mipmap/online_kefu" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="在线客服"
+                        android:layout_marginTop="4dp"
+                        android:textColor="#ff191919"
+                        android:textSize="14sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/shopmall"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:scaleType="centerInside"
+                        android:src="@mipmap/shop_mall" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="购物商城"
+                        android:layout_marginTop="4dp"
+                        android:textColor="#ff191919"
+                        android:textSize="14sp" />
+                </LinearLayout>
                 <LinearLayout
                     android:id="@+id/person_setting"
                     android:layout_width="0dp"
@@ -628,8 +697,8 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:scaleType="centerInside"
                         android:src="@mipmap/gexing_set" />
 
@@ -641,10 +710,6 @@
                         android:textColor="#ff191919"
                         android:textSize="14sp" />
                 </LinearLayout>
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
             </LinearLayout>
 
         </LinearLayout>

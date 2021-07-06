@@ -2,6 +2,8 @@ package cn.wu1588.video.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
@@ -10,6 +12,7 @@ import java.util.List;
 
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.utils.L;
+import cn.wu1588.common.utils.StatusBarUtil;
 import cn.wu1588.video.R;
 import cn.wu1588.video.bean.VideoBean;
 import cn.wu1588.video.http.VideoHttpUtil;
@@ -30,6 +33,15 @@ public class VideoPlayActivity extends AbsVideoPlayActivity {
         context.startActivity(intent);
     }
 
+    @Override
+    protected void setStatusBar() {
+        StatusBarUtil.setStatusBarColor(this,R.color.black);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(Color.parseColor("#000000"));
+            //getWindow().setNavigationBarColor(getResources().getColor(R.color.black));
+            //getWindow().setNavigationBarColor(Color.BLUE);
+        }
+    }
 
     public static void forwardSingle(Context context, VideoBean videoBean) {
         if (videoBean == null) {

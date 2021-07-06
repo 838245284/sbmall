@@ -12,7 +12,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
 
 import cn.wu1588.common.dialog.AbsDialogFragment;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.baidu.utils.ImAsrUtil;
 import cn.wu1588.common.utils.DpUtil;
 import cn.wu1588.common.utils.WordUtil;

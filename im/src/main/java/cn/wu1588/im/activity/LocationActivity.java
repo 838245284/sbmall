@@ -22,6 +22,13 @@ import com.tencent.mapsdk.raster.model.CameraPosition;
 import com.tencent.mapsdk.raster.model.LatLng;
 import com.tencent.tencentmap.mapsdk.map.MapView;
 import com.tencent.tencentmap.mapsdk.map.TencentMap;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.activity.AbsActivity;
@@ -36,14 +43,8 @@ import cn.wu1588.common.interfaces.OnItemClickListener;
 import cn.wu1588.common.utils.LocationUtil;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.adapter.LocationAdapter;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
 
 /**
  * Created by cxf on 2018/7/18.

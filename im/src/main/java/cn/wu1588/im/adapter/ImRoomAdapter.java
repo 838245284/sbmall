@@ -31,7 +31,7 @@ import cn.wu1588.common.utils.L;
 import cn.wu1588.common.utils.MD5Util;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.ImChatImageBean;
 import cn.wu1588.im.bean.ImMessageBean;
 import cn.wu1588.im.bean.ImMsgLocationBean;

@@ -3,33 +3,23 @@ package cn.wu1588.video.views;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack;
-import com.shuyu.gsyvideoplayer.listener.VideoAllCallBack;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
-import com.tencent.rtmp.ITXVodPlayListener;
-import com.tencent.rtmp.TXLiveConstants;
-import com.tencent.rtmp.TXVodPlayConfig;
-import com.tencent.rtmp.TXVodPlayer;
-import com.tencent.rtmp.ui.TXCloudVideoView;
 
-import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.glide.ImgLoader;
 import cn.wu1588.common.utils.L;
 import cn.wu1588.common.views.AbsViewHolder;
-
+import cn.wu1588.video.R;
 import cn.wu1588.video.bean.VideoBean;
 import cn.wu1588.video.http.VideoHttpConsts;
 import cn.wu1588.video.http.VideoHttpUtil;
-import cn.wu1588.video.R;
 
 /**
  * Created by cxf on 2018/11/30.
@@ -46,6 +36,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
     private ObjectAnimator mPlayBtnAnimator;//暂停按钮的动画
     private VideoBean mVideoBean;
 
+    private boolean mPaused;//生命周期暂停
 
     private boolean mStartPlay;
     private boolean mClickPaused;
@@ -73,7 +64,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL);
         // 重复播放
         mVideoView.setLooping(true);
-        mVideoView.setAutoFullWithSize(true);
+//        mVideoView.setAutoFullWithSize(true);
         mVideoView.setVideoAllCallBack(new GSYSampleCallBack() {
             @Override
             public void onStartPrepared(String url, Object... objects) {
@@ -105,6 +96,10 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
                         VideoHttpUtil.videoWatchEnd(mVideoBean.getUid(), mVideoBean.getId());
                     }
                 }
+            }
+
+            @Override
+            public void onPlayError(String url, Object... objects) {
             }
         });
 
@@ -143,6 +138,7 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
         mVideoView.setUp(url, true, "");
         mVideoView.startPlayLogic();
         VideoHttpUtil.videoWatchStart(videoBean.getUid(), videoBean.getId());
+
     }
 
     /**
@@ -158,10 +154,11 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 循环播放
      */
     private void replay() {
-        mVideoView.startPlayLogic();
+        mVideoView.onVideoReset();
     }
 
     public void release() {
+
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_START);
         VideoHttpUtil.cancel(VideoHttpConsts.VIDEO_WATCH_END);
         if (mVideoView != null) {
@@ -174,16 +171,24 @@ public class VideoPlayViewHolder extends AbsViewHolder implements View.OnClickLi
      * 生命周期暂停
      */
     public void pausePlay() {
-        if (!mClickPaused && mVideoView != null)
+        if (mVideoView != null && !mClickPaused && !mPaused && mVideoView.isInPlayingState()
+                && mStartPlay) {
+
             mVideoView.onVideoPause();
+        }
+        mPaused = true;
     }
 
     /**
      * 生命周期恢复
      */
     public void resumePlay() {
-        if (!mClickPaused && mVideoView != null)
-            mVideoView.onVideoResume();
+        if (mPaused) {
+            if (!mClickPaused && mVideoView != null
+                    && mStartPlay)
+                mVideoView.onVideoResume(false);
+        }
+        mPaused = false;
     }
 
     /**

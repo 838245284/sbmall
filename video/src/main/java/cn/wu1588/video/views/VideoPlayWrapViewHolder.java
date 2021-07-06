@@ -28,6 +28,7 @@ import cn.wu1588.common.http.CommonHttpUtil;
 import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.interfaces.CommonCallback;
 import cn.wu1588.common.utils.RouteUtil;
+import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.views.AbsViewHolder;
 import cn.wu1588.video.R;
@@ -175,7 +176,11 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
                 setCoverImage();
             }
             if (mTitle != null) {
-                mTitle.setText(mVideoBean.getTitle());
+                if("1".equals(mVideoBean.getIs_title())){
+                    mTitle.setText(mVideoBean.getTitle());
+                }else{
+                    mTitle.setText("");
+                }
             }
             if (u != null) {
                 if (mAvatar != null) {
@@ -303,20 +308,30 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
 
     /**
      * 滑出屏幕
+     * @param b
      */
-    public void onPageOutWindow() {
+    public void onPageOutWindow(boolean b) {
+        String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
         mCurPageShowed = false;
+        /*if(b && TextUtils.equals("1",stringValue)){
+            mCover.setVisibility(View.INVISIBLE);
+            return;
+        }*/
         if (mCover != null && mCover.getVisibility() != View.VISIBLE) {
             mCover.setVisibility(View.VISIBLE);
         }
-        showAd(mWithAd.ad!=null);
     }
 
     /**
      * 滑入屏幕
+     * @param b
      */
-    public void onPageInWindow() {
-
+    public void onPageInWindow(boolean b) {
+       /* String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+        if(b && TextUtils.equals("1",stringValue)){
+            mCover.setVisibility(View.INVISIBLE);
+            return;
+        }*/
         if (mCover != null) {
             if (mCover.getVisibility() != View.VISIBLE) {
                 mCover.setVisibility(View.VISIBLE);
@@ -324,10 +339,9 @@ public class VideoPlayWrapViewHolder extends AbsViewHolder implements View.OnCli
             mCover.setImageDrawable(null);
             setCoverImage();
         }
-        showAd(mWithAd.ad!=null);
     }
 
-    private void showAd(boolean isShow){
+    public void showAd(boolean isShow){
         mCover.setVisibility(isShow?View.INVISIBLE:View.VISIBLE);
         mRightSection.setVisibility(isShow?View.GONE:View.VISIBLE);
         mBottomSection.setVisibility(isShow?View.GONE:View.VISIBLE);

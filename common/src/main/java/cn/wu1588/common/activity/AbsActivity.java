@@ -3,7 +3,6 @@ package cn.wu1588.common.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -14,15 +13,16 @@ import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.wu1588.common.R;
 import cn.wu1588.common.interfaces.LifeCycleListener;
 import cn.wu1588.common.utils.ClickUtil;
 import cn.wu1588.common.utils.DpUtil;
 import cn.wu1588.common.utils.ScreenDimenUtil;
 import cn.wu1588.common.utils.SpUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import cn.wu1588.common.utils.StatusBarUtil;
 
 /**
  * Created by cxf on 2017/8/3.
@@ -41,6 +41,7 @@ public abstract class AbsActivity extends FragmentActivity {
         mTag = this.getClass().getSimpleName();
         getInentParams();
         setStatusBar();
+
         setContentView(getLayoutId());
         setStatusHeight();
         mContext = this;
@@ -93,8 +94,9 @@ public abstract class AbsActivity extends FragmentActivity {
     /**
      * 设置透明状态栏
      */
-    private void setStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    protected void setStatusBar() {
+        StatusBarUtil.setStatusBarMode(this,true,R.color.background);
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             if (isStatusBarWhite()) {
@@ -104,7 +106,7 @@ public abstract class AbsActivity extends FragmentActivity {
             }
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(0);
-        }
+        }*/
     }
 
 

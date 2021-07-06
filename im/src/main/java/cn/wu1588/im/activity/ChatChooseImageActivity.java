@@ -11,7 +11,7 @@ import cn.wu1588.common.custom.ItemDecoration;
 import cn.wu1588.common.interfaces.CommonCallback;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.adapter.ImChatChooseImageAdapter;
 import cn.wu1588.im.bean.ChatChooseImageBean;
 import cn.wu1588.im.utils.ImageUtil;

@@ -9,7 +9,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 
 /**
  * Created by cxf on 2018/7/11.

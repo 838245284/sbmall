@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.view.ViewGroup;
 
 import cn.wu1588.common.activity.AbsActivity;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.views.SystemMessageViewHolder;
 
 /**

@@ -33,6 +33,7 @@
         />
 
     <LinearLayout
+        android:id="@+id/llybot"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"

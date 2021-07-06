@@ -26,6 +26,7 @@ public class VideoBean implements Parcelable {
     private String stepNum;
     private String shareNum;
     private String addtime;
+    private String signature;
     private String lat;
     private String lng;
     private String city;
@@ -44,10 +45,13 @@ public class VideoBean implements Parcelable {
 
     private String video_time;
     private String sc_count;
+    private String is_title;
     private String videoclass;
     private String video_cs;
     private String isattent; // 是否关注
-    private int classid; // 是否关注
+    private String is_jx; // 是否教学
+    private String is_yc; // 是否教学
+    private int classid; //
 
 
     public VideoBean() {
@@ -63,10 +67,12 @@ public class VideoBean implements Parcelable {
         this.isattent = isattent;
     }
 
+    @JSONField(name = "video_time")
     public String getVideo_time() {
         return video_time;
     }
 
+    @JSONField(name = "video_time")
     public void setVideo_time(String video_time) {
         this.video_time = video_time;
     }
@@ -389,6 +395,10 @@ public class VideoBean implements Parcelable {
         dest.writeString(this.videoclass);
         dest.writeString(this.isattent);
         dest.writeString(this.video_cs);
+        dest.writeString(this.is_jx);
+        dest.writeString(this.is_yc);
+        dest.writeString(this.signature);
+        dest.writeString(this.is_title);
     }
 
     public void readFromParcel(Parcel source) {
@@ -399,6 +409,8 @@ public class VideoBean implements Parcelable {
         this.thumbs = source.readString();
         this.href = source.readString();
         this.hrefW = source.readString();
+        this.is_jx = source.readString();
+        this.is_yc = source.readString();
         this.likeNum = source.readString();
         this.viewNum = source.readString();
         this.commentNum = source.readString();
@@ -425,6 +437,8 @@ public class VideoBean implements Parcelable {
         this.videoclass = source.readString();
         this.isattent = source.readString();
         this.video_cs = source.readString();
+        this.signature = source.readString();
+        this.is_title = source.readString();
     }
 
     protected VideoBean(Parcel in) {
@@ -458,9 +472,13 @@ public class VideoBean implements Parcelable {
         this.mGoodsType = in.readInt();
         this.video_time = in.readString();
         this.sc_count = in.readString();
+        this.is_yc = in.readString();
+        this.is_jx = in.readString();
         this.videoclass = in.readString();
         this.isattent = in.readString();
         this.video_cs = in.readString();
+        this.signature = in.readString();
+        this.is_title = in.readString();
     }
 
     public static final Creator<VideoBean> CREATOR = new Creator<VideoBean>() {
@@ -497,5 +515,45 @@ public class VideoBean implements Parcelable {
     @JSONField(name = "classid")
     public void setClassid(int classid) {
         this.classid = classid;
+    }
+
+    @JSONField(name = "is_jx")
+    public String getIs_jx() {
+        return is_jx;
+    }
+
+    @JSONField(name = "is_jx")
+    public void setIs_jx(String is_jx) {
+        this.is_jx = is_jx;
+    }
+
+    @JSONField(name = "is_yc")
+    public String getIs_yc() {
+        return is_yc;
+    }
+
+    @JSONField(name = "is_yc")
+    public void setIs_yc(String is_yc) {
+        this.is_yc = is_yc;
+    }
+
+    @JSONField(name = "signature")
+    public String getSignature() {
+        return signature;
+    }
+
+    @JSONField(name = "signature")
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    @JSONField(name = "is_title")
+    public String getIs_title() {
+        return is_title;
+    }
+
+    @JSONField(name = "is_title")
+    public void setIs_title(String is_title) {
+        this.is_title = is_title;
     }
 }

@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import cn.wu1588.common.Constants;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.ChatChooseImageBean;
 import cn.wu1588.common.glide.ImgLoader;
 

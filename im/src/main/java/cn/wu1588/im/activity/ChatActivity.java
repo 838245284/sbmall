@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.activity.AbsActivity;
 import cn.wu1588.common.utils.RouteUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.ImUserBean;
 import cn.wu1588.im.views.ChatListViewHolder;
 

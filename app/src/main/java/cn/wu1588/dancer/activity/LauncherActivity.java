@@ -161,7 +161,7 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
         if(TextUtils.equals(stringValue,"1")){
             TTAdNative mTTAdNative = TTAdSdk.getAdManager().createAdNative(this);
             AdSlot adSlot = new AdSlot.Builder()
-                    .setCodeId("887491230")
+                    .setCodeId("887469580")
                     .setImageAcceptedSize(1080, 1920)
                     .build();
             mTTAdNative.loadSplashAd(adSlot, new TTAdNative.SplashAdListener() {
@@ -191,9 +191,9 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
                     //获取SplashView
                     View view = ad.getSplashView();
                     if (view != null && !LauncherActivity.this.isFinishing()) {
-                        mRoot.removeAllViews();
+                        mContainer.removeAllViews();
                         //把SplashView 添加到ViewGroup中,注意开屏广告view：width =屏幕宽；height >=75%屏幕高
-                        mRoot.addView(view);
+                        mContainer.addView(view);
                         //设置不开启开屏广告倒计时功能以及不显示跳过按钮,如果这么设置，您需要自定义倒计时逻辑
                         //ad.setNotAllowSdkCountdown();
                     }else {
@@ -337,19 +337,23 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
                 new String[]{SpUtil.UID, SpUtil.TOKEN});
         final String uid = uidAndToken[0];
         final String token = uidAndToken[1];
-        if (!TextUtils.isEmpty(uid) && !TextUtils.isEmpty(token)) {
-            MainHttpUtil.getBaseInfo(uid, token, new CommonCallback<UserBean>() {
-                @Override
-                public void callback(UserBean bean) {
-                    if (bean != null) {
-                        CommonAppConfig.getInstance().setLoginInfo(uid, token, false);
-                        forwardMainActivity();
+        if(!SpUtil.getInstance().getBooleanValue(SpUtil.HAS_GUIDE)){
+            GuideActivity.lauch(this);
+        }else{
+            if (!TextUtils.isEmpty(uid) && !TextUtils.isEmpty(token)) {
+                MainHttpUtil.getBaseInfo(uid, token, new CommonCallback<UserBean>() {
+                    @Override
+                    public void callback(UserBean bean) {
+                        if (bean != null) {
+                            CommonAppConfig.getInstance().setLoginInfo(uid, token, false);
+                            forwardMainActivity();
+                        }
                     }
-                }
-            });
-        } else {
-            releaseVideo();
-            LoginActivity.forward();
+                });
+            } else {
+                releaseVideo();
+                LoginActivity.forward();
+            }
         }
     }
 

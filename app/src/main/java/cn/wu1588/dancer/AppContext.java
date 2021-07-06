@@ -73,7 +73,7 @@ public class AppContext extends CommonAppContext {
     private void initAd() {
         TTAdSdk.init(sInstance,
                 new TTAdConfig.Builder()
-                        .appId("5179884")
+                        .appId("5164567")
                         .useTextureView(true) //默认使用SurfaceView播放视频广告,当有SurfaceView冲突的场景，可以使用TextureView
                         .appName("APP测试媒体")
                         .titleBarTheme(TTAdConstant.TITLE_BAR_THEME_DARK)//落地页主题

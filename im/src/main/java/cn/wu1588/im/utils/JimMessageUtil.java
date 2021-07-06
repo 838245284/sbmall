@@ -11,7 +11,7 @@ import cn.wu1588.common.utils.L;
 import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.ImMessageBean;
 import cn.wu1588.im.bean.ImMsgLocationBean;
 import cn.wu1588.im.bean.ImUserBean;

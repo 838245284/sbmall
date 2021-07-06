@@ -31,6 +31,7 @@ import cn.wu1588.main.activity.EditProfileActivity;
 import cn.wu1588.main.activity.FansActivity;
 import cn.wu1588.main.activity.FollowActivity;
 import cn.wu1588.main.activity.MainActivity;
+import cn.wu1588.main.activity.MallActivity;
 import cn.wu1588.main.activity.MyActiveActivity;
 import cn.wu1588.main.activity.MyProfitActivity;
 import cn.wu1588.main.activity.MyVideoActivity;
@@ -100,6 +101,9 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
         findViewById(R.id.mylevel).setOnClickListener(this);
         findViewById(R.id.invite_award).setOnClickListener(this);
         findViewById(R.id.person_setting).setOnClickListener(this);
+        findViewById(R.id.shopmall).setOnClickListener(this);
+        findViewById(R.id.familicenter).setOnClickListener(this);
+        findViewById(R.id.online).setOnClickListener(this);
     }
 
     @Override
@@ -273,6 +277,12 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
             forwardSetting();
         }else if(i == R.id.buycenter){
             forwardMall();
+        }else if(i == R.id.familicenter){
+            toWeb(6);
+        }else if(i == R.id.online){
+            toWeb(21);
+        }else if(i == R.id.shopmall){
+            forwardMallActivity();
         }
     }
 
@@ -295,6 +305,10 @@ public class MainMeViewHolder extends AbsMainViewHolder implements OnItemClickLi
      */
     private void forwardFans() {
         FansActivity.forward(mContext, CommonAppConfig.getInstance().getUid());
+    }
+
+    private void forwardMallActivity() {
+        MallActivity.forward(mContext);
     }
 
     /**

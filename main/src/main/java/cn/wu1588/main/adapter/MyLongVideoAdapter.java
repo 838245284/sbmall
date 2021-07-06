@@ -152,7 +152,7 @@ public class MyLongVideoAdapter extends RefreshAdapter<VideoBean> {
                 @Override
                 public void onClick(View v) {
                     dialog.dismiss();
-                    VideoRePublishActivity.forward(mContext,bean);
+                    VideoRePublishActivity.forward(mContext,bean,bean.getIs_jx(),bean.getIs_yc());
                 }
             });
             view.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {

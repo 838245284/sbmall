@@ -59,7 +59,7 @@ public class MyLongVideoViewHolder extends AbsUserHomeViewHolder implements OnIt
 
     @Override
     protected int getLayoutId() {
-        return R.layout.view_video_home;
+        return R.layout.layout_refreshlist;
     }
 
     @Override

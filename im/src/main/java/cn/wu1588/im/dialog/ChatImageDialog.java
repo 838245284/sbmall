@@ -16,7 +16,7 @@ import android.widget.ImageView;
 
 import cn.wu1588.common.dialog.AbsDialogFragment;
 import cn.wu1588.common.utils.ScreenDimenUtil;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.adapter.ChatImagePreviewAdapter;
 import cn.wu1588.im.bean.ImChatImageBean;
 import cn.wu1588.im.bean.ImMessageBean;

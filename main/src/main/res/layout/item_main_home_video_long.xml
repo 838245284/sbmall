@@ -15,13 +15,13 @@
         android:paddingTop="@dimen/dp10"
         android:paddingBottom="8dp"
         android:textColor="@color/textColor"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         tools:text="@string/tip_text" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="172dp">
+        android:layout_height="200dp">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/cover"
@@ -66,7 +66,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:textColor="@color/textColor"
-            android:textSize="12sp"
+            android:textSize="14sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/avatar"
             app:layout_constraintTop_toTopOf="@+id/avatar"
             tools:text="@string/tip_text" />
@@ -107,7 +108,7 @@
             android:id="@+id/layout_operation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="32dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toStartOf="@+id/tag"
             app:layout_constraintStart_toEndOf="@+id/avatar"
@@ -121,8 +122,8 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@mipmap/ic_video_long_collection" />
 
                 <TextView
@@ -134,7 +135,7 @@
                     android:singleLine="true"
                     android:text="0"
                     android:textColor="@color/textColor2"
-                    android:textSize="9sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
 
@@ -146,8 +147,8 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@mipmap/ic_video_long_num" />
 
                 <TextView
@@ -159,7 +160,7 @@
                     android:singleLine="true"
                     android:text="0"
                     android:textColor="@color/textColor2"
-                    android:textSize="9sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -171,8 +172,8 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@mipmap/ic_video_long_like" />
 
                 <TextView
@@ -184,7 +185,7 @@
                     android:singleLine="true"
                     android:text="0"
                     android:textColor="@color/textColor2"
-                    android:textSize="9sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
 
@@ -195,13 +196,14 @@
             android:id="@+id/tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="16dp"
             android:background="@drawable/shape_bg_tag_video_long"
             android:paddingHorizontal="8dp"
             android:paddingVertical="3dp"
             android:text="tag"
+            android:textStyle="bold"
             android:textColor="@color/white"
-            android:textSize="8sp"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/layout_operation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/layout_operation" />

@@ -18,11 +18,13 @@ import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.util.Arrays;
 import java.util.List;
 
 import cn.wu1588.common.R;
 import cn.wu1588.common.adapter.RefreshAdapter;
 import cn.wu1588.common.http.HttpCallback;
+import cn.wu1588.common.utils.LogUtil;
 import cn.wu1588.common.utils.ToastUtil;
 
 /**
@@ -113,6 +115,7 @@ public class CommonRefreshView extends FrameLayout implements View.OnClickListen
 
         @Override
         public void onSuccess(int code, String msg, String[] info) {
+            LogUtil.e("mRefreshCallback", Arrays.toString(info));
             if (mDataHelper == null) {
                 return;
             }
@@ -206,6 +209,7 @@ public class CommonRefreshView extends FrameLayout implements View.OnClickListen
 
         @Override
         public void onSuccess(int code, String msg, String[] info) {
+            LogUtil.e("mLoadMoreCallback", Arrays.toString(info));
             if (mDataHelper == null) {
                 mPageCount--;
                 return;

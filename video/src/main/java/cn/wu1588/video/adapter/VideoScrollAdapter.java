@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
     public VideoScrollAdapter(Context context, List<VideoWithAds> list, int curPosition) {
         mContext = context;
+//        deleteUnVideo(list);
         mList = list;
         mCurPosition = curPosition;
         mMap = new SparseArray<>();
@@ -84,7 +86,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
             VideoPlayWrapViewHolder vpvh = mMap.get(mCurPosition);
             if (vpvh != null && mActionListener != null) {
                 vpvh.onPageSelected();
-                mActionListener.onPageSelected(vpvh, mList.size() >= COUNT && mCurPosition == mList.size() - 1);
+                mActionListener.onPageSelected(vpvh, mList.size() >= COUNT && mCurPosition == mList.size() - 1,-1);
             }
         }
     }
@@ -118,6 +120,8 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
         }
     }
 
+
+
     /**
      * 删除视频
      */
@@ -144,7 +148,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
                         @Override
                         public void run() {
                             mCurPosition = -1;
-                            findCurVideo();
+                            findCurVideo(true);
                         }
                     }, 500);
                 } else {
@@ -232,9 +236,10 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
     @Override
     public void onViewDetachedFromWindow(@NonNull Vh vh) {
+        Log.e(TAG, "onViewDetachedFromWindow: "+scrollIndex );
         VideoPlayWrapViewHolder vpvh = vh.mVideoPlayWrapViewHolder;
         if (vpvh != null) {
-            vpvh.onPageOutWindow();
+            vpvh.onPageOutWindow(scrollIndex%6==0);
             if (mActionListener != null) {
                 mActionListener.onPageOutWindow(vpvh);
             }
@@ -243,9 +248,10 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
     @Override
     public void onViewAttachedToWindow(@NonNull Vh vh) {
+        Log.e(TAG, "onViewAttachedToWindow: "+scrollIndex );
         VideoPlayWrapViewHolder vpvh = vh.mVideoPlayWrapViewHolder;
         if (vpvh != null) {
-            vpvh.onPageInWindow();
+            vpvh.onPageInWindow(scrollIndex%6==0);
         }
     }
 
@@ -265,12 +271,15 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                findCurVideo();
+                Log.e(TAG, "onScrolled: "+dy );
+                findCurVideo(dy>0);
             }
         });
     }
 
-    private void findCurVideo() {
+    int scrollIndex = 1;
+
+    private void findCurVideo(boolean shanghua) {
         int position = mLayoutManager.findFirstCompletelyVisibleItemPosition();
 
         if (position >= 0 && mCurPosition != position) {
@@ -288,7 +297,13 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
                         needLoadMore = true;
                     }
                 }
-                mActionListener.onPageSelected(vh, needLoadMore);
+                if(shanghua){
+                    scrollIndex++;
+                }else{
+                    scrollIndex--;
+                }
+                Log.e(TAG, "findCurVideo: "+scrollIndex );
+                mActionListener.onPageSelected(vh, needLoadMore,scrollIndex);
             }
             mCurPosition = position;
             if (position == 0) {
@@ -303,6 +318,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
     public void insertList(List<VideoWithAds> list) {
         if (list != null && list.size() > 0 && mList != null && mRecyclerView != null) {
             int position = mList.size();
+//            deleteUnVideo(list);
             mList.addAll(list);
             notifyItemRangeInserted(position, list.size());
         }
@@ -312,14 +328,22 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
         mList.add(position, videoBean);
         notifyItemRangeInserted(position, mList.size());
     }
-
-
+    /*private void deleteUnVideo(List<VideoWithAds> list){
+        Iterator<VideoWithAds> iterator = list.iterator();
+        while (iterator.hasNext()){
+            VideoWithAds next = iterator.next();
+            if(next.videoBean!=null && TextUtils.isEmpty(next.videoBean.getHref())){
+                iterator.remove();
+            }
+        }
+    }*/
     /**
      * 刷新列表
      */
     public void setList(List<VideoWithAds> list) {
         if (list != null && list.size() > 0 && mList != null && mRecyclerView != null) {
             mList.clear();
+//            deleteUnVideo(list);
             mList.addAll(list);
             mFirstLoad = true;
             mCurPosition = 0;
@@ -406,7 +430,7 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
 
     public interface ActionListener {
-        void onPageSelected(VideoPlayWrapViewHolder vh, boolean needLoadMore);
+        void onPageSelected(VideoPlayWrapViewHolder vh, boolean needLoadMore,int scrollIndex);
 
         void onPageOutWindow(VideoPlayWrapViewHolder vh);
 

@@ -15,6 +15,7 @@ import cn.wu1588.common.CommonAppContext;
 
 public class SpUtil {
 
+    public static final String HAS_GUIDE = "guide";
     private static SpUtil sInstance;
     private SharedPreferences mSharedPreferences;
 

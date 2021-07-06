@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.adapter.RefreshAdapter;
-import com.myylook.im.R;
+import cn.wu1588.im.R;
 import cn.wu1588.im.bean.SystemMessageBean;
 
 /**
