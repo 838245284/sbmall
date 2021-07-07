@@ -1,4 +1,4 @@
-package cn.wu1588.dancer;
+package cn.wu1588.main;
 
 import android.text.TextUtils;
 

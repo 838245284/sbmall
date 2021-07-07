@@ -1,4 +1,4 @@
-package cn.wu1588.dancer.activity;
+package cn.wu1588.main.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,9 +17,7 @@ import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.bean.UserBean;
 import cn.wu1588.common.interfaces.CommonCallback;
 import cn.wu1588.common.utils.SpUtil;
-import cn.wu1588.dancer.R;
-import cn.wu1588.main.activity.LoginActivity;
-import cn.wu1588.main.activity.MainActivity;
+import cn.wu1588.main.R;
 import cn.wu1588.main.http.MainHttpUtil;
 
 public class GuideActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package cn.wu1588.dancer.activity;
+package cn.wu1588.main.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -60,11 +60,9 @@ import cn.wu1588.common.utils.RouteUtil;
 import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
-import cn.wu1588.dancer.AppContext;
-import cn.wu1588.dancer.R;
 import cn.wu1588.live.views.LauncherAdViewHolder;
-import cn.wu1588.main.activity.LoginActivity;
-import cn.wu1588.main.activity.MainActivity;
+import cn.wu1588.main.AppContext;
+import cn.wu1588.main.R;
 import cn.wu1588.main.http.MainHttpConsts;
 import cn.wu1588.main.http.MainHttpUtil;
 
