@@ -259,8 +259,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_gravity="center"
-                        android:src="@mipmap/icon_goods_img_add" />
+                        android:layout_gravity="center"/>
 
                     <ImageView
                         android:id="@+id/img"

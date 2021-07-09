@@ -151,19 +151,7 @@
             android:name="SERVER_HOST"
             android:value="${serverHost}" />
 
-        <provider
-            android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
-            android:authorities="com.myylook.meikan.TTFileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-        <provider
-            android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
-            android:authorities="com.myylook.meikan.TTMultiProvider"
-            android:exported="false" />
+
     </application>
 
 </manifest>

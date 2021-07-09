@@ -1,4 +1,4 @@
-package cn.wu1588.common.views;
+package cn.wu1588.video.views;
 
 import android.content.Context;
 import android.graphics.Color;

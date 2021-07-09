@@ -169,7 +169,7 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
                 if (TextUtils.equals(stringValue, "1")) {
                     int space = list.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
                     int size = list.size();
-                    for (int i = 0; i < size; i += space) {
+                    for (int i = 0; i <= size; i += space) {
                         if (i != 0 && i % space == 0) {
                             loadListAd(space, i);
                         }
@@ -187,14 +187,13 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
                 List<VideoBean> beans = VideoStorge.getInstance().get(index);
                 beans.addAll(adsToVideo(loadItemList));
                 VideoStorge.getInstance().put(String.valueOf(index), beans);
-//                loadListAd();
-//                Log.e(TAG, "onLoadMoreSuccess: "+loadItemList.size()+"  "+loadItemCount );
                 String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
                 if(TextUtils.equals(stringValue,"1")){
                     int space = loadItemList.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
                     int size = loadItemList.size();
-                    for (int i = 0; i < size; i += space) {
-                        int position = mAdapter.getList().indexOf(loadItemList.get(i));
+                    for (int i = 0; i <= size; i += space) {
+                        List<VideoWithAds> list = mAdapter.getList();
+                        int position = i<size? list.indexOf(loadItemList.get(i)):-1;
                         if (i != 0 && i % space == 0) {
                             loadListAd(space, position);
                         }
@@ -301,8 +300,14 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
             videoWithAds.ad = ad;
             videoWithAds.itemType = VideoWithAds.ITEM_TYPE_Ads;
             List<VideoWithAds> adapterList = mAdapter.getList();
-            adapterList.add(position, videoWithAds);
-            beans.add(position, new VideoBean());
+            if(position>0){
+                adapterList.add(position, videoWithAds);
+                beans.add(position, new VideoBean());
+            }else{
+                adapterList.add(videoWithAds);
+                beans.add(new VideoBean());
+            }
+
             ad.render();
         }
         VideoStorge.getInstance().put(index, beans);

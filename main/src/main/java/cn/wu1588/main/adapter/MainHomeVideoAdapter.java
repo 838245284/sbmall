@@ -28,7 +28,7 @@ import cn.wu1588.common.adapter.RefreshAdapter;
 import cn.wu1588.common.bean.UserBean;
 import cn.wu1588.common.glide.ImgLoader;
 import cn.wu1588.common.utils.DateFormatUtil;
-import cn.wu1588.common.views.DislikeDialog;
+import cn.wu1588.video.views.DislikeDialog;
 import cn.wu1588.main.R;
 import cn.wu1588.video.bean.VideoWithAds;
 
