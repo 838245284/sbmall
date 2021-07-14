@@ -12,19 +12,19 @@ ext {
             serverHost       : "https://wuzhe.wuzhesp.com/",
 
             //极光推送 IM
-            jpushAppKey      : "5f004cb3bf71963954187190",
+            jpushAppKey      : "b714fb96e566f8e63dfe26ee",
 
             //腾讯地图
             txMapAppKey      : "KM4BZ-C7KK2-TWXUH-CHGB6-6ZLXJ-JBF7P",
             txMapAppSecret   : "XxXDrjBFpgjgOaAnv3olrgvmsS43Nfu5",
             //腾讯bugly
-            buglyAppId       : "2faff968e6",
+            buglyAppId       : "f189e2fc36",
             //百度语音识别
-            baiduAppId       : "24363290",
-            baiduAppKey      : "DLFVb4TGhxUZAPZGUdITb1Rw",
-            baiduAppSecretKey: "ekse89No67UFgeGNKhwEDCQxsGveXW4F",
+            baiduAppId       : "24529301",
+            baiduAppKey      : "8xuSzlvTTshGbkeCPZEqv2g9",
+            baiduAppSecretKey: "d3d00Qzn5QiNDRsI7zYeZsa64BWEEe3F",
             //友盟统计
-            umengAppKey      : "60c4bd21e044530ff0a23a15"
+            umengAppKey      : "6057f4adb8c8d45c13a8a0bd"
 
     ]
 

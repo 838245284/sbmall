@@ -236,7 +236,6 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
     @Override
     public void onViewDetachedFromWindow(@NonNull Vh vh) {
-        Log.e(TAG, "onViewDetachedFromWindow: "+scrollIndex );
         VideoPlayWrapViewHolder vpvh = vh.mVideoPlayWrapViewHolder;
         if (vpvh != null) {
             vpvh.onPageOutWindow(scrollIndex%6==0);
@@ -248,7 +247,6 @@ public class VideoScrollAdapter extends RecyclerView.Adapter<VideoScrollAdapter.
 
     @Override
     public void onViewAttachedToWindow(@NonNull Vh vh) {
-        Log.e(TAG, "onViewAttachedToWindow: "+scrollIndex );
         VideoPlayWrapViewHolder vpvh = vh.mVideoPlayWrapViewHolder;
         if (vpvh != null) {
             vpvh.onPageInWindow(scrollIndex%6==0);

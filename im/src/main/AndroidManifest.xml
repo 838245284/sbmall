@@ -4,11 +4,11 @@
 
     <!--接三方的时候,修改这里的包名-->
     <permission
-        android:name="com.myylook.meikan.permission.JPUSH_MESSAGE"
+        android:name="cn.wu1588.dancer.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature"/>
 
     <!--接三方的时候,修改这里的包名-->
-    <uses-permission android:name="com.yunbao.phonelive.permission.JPUSH_MESSAGE"/>
+    <uses-permission android:name="cn.wu1588.dancer.permission.JPUSH_MESSAGE"/>
 
     <application
         android:allowBackup="true"
@@ -146,6 +146,6 @@
         <!--接三方的时候,修改这里的APP_KEY-->
         <meta-data
             android:name="JPUSH_APPKEY"
-            android:value="${jpushAppKey}"/>
+            android:value="b714fb96e566f8e63dfe26ee"/>
     </application>
 </manifest>

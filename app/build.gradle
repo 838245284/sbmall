@@ -4,15 +4,15 @@ android {
     buildToolsVersion rootProject.ext.android.buildToolsVersion
     signingConfigs {
         release {
-            keyAlias 'mk'
+            keyAlias 'android.keystore'
             keyPassword '123456'
-            storeFile file('../meikan.jks')
+            storeFile file('../android.keystore')
             storePassword '123456'
         }
         debug {
-            keyAlias 'mk'
+            keyAlias 'android.keystore'
             keyPassword '123456'
-            storeFile file('../meikan.jks')
+            storeFile file('../android.keystore')
             storePassword '123456'
         }
     }

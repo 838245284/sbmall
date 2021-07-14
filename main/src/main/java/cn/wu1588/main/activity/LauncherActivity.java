@@ -41,6 +41,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cn.wu1588.common.CommonAppConfig;
@@ -121,9 +122,15 @@ public class LauncherActivity extends AppCompatActivity implements View.OnClickL
         MainHttpUtil.isNeedAd(new HttpCallback() {
             @Override
             public void onSuccess(int code, String msg, String[] info) {
+                Log.e(TAG, "onSuccess: "+ Arrays.toString(info));
                 JSONObject obj = JSON.parseObject(info[0]);
                 String value = obj.getString("option_value");
-                SpUtil.getInstance().setStringValue(SpUtil.AD,value);
+                JSONObject parse = JSON.parseObject(value);
+                String csj = parse.getString("csj");
+                String ylh = parse.getString("ylh");
+
+                SpUtil.getInstance().setStringValue(SpUtil.AD,csj);
+                SpUtil.getInstance().setStringValue(SpUtil.QQAD,ylh);
             }
         });
         mContext = this;

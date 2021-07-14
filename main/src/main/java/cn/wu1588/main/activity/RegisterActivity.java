@@ -1,24 +1,41 @@
 package cn.wu1588.main.activity;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.Constants;
 import cn.wu1588.common.activity.AbsActivity;
+import cn.wu1588.common.activity.WebViewActivity;
 import cn.wu1588.common.bean.UserBean;
 import cn.wu1588.common.http.HttpCallback;
 import cn.wu1588.common.interfaces.CommonCallback;
+import cn.wu1588.common.mob.MobBean;
 import cn.wu1588.common.utils.DialogUitl;
 import cn.wu1588.common.utils.ToastUtil;
 import cn.wu1588.common.utils.WordUtil;
@@ -27,10 +44,6 @@ import cn.wu1588.main.dialog.LoginTipDialogFragment;
 import cn.wu1588.main.event.RegSuccessEvent;
 import cn.wu1588.main.http.MainHttpConsts;
 import cn.wu1588.main.http.MainHttpUtil;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by cxf on 2018/9/25.
@@ -51,6 +64,9 @@ public class RegisterActivity extends AbsActivity {
     private String mGetCodeAgain;
     private Dialog mDialog;
     private boolean mFirstLogin;//是否是第一次登录
+    private boolean selectXieyi;//是否是第一次登录
+    private TextView loginTipTextView;
+    private ImageView ivSelect;
 
     @Override
     protected int getLayoutId() {
@@ -61,6 +77,74 @@ public class RegisterActivity extends AbsActivity {
     @Override
     protected void main() {
         setTitle(WordUtil.getString(R.string.reg_register));
+        ivSelect = findViewById(R.id.iv_select);
+        ivSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectXieyi = !selectXieyi;
+                ivSelect.setImageResource(selectXieyi?R.mipmap.group_select_click:R.mipmap.group_select);
+            }
+        });
+        MainHttpUtil.getLoginInfo(new HttpCallback() {
+            @Override
+            public void onSuccess(int code, String msg, String[] info) {
+                if (code == 0 && info.length > 0) {
+                    JSONObject obj = JSON.parseObject(info[0]);
+                    String[] loginTypeArray = JSON.parseObject(obj.getString("login_type"), String[].class);
+                    if (loginTypeArray != null && loginTypeArray.length > 0) {
+                        List<MobBean> list = MobBean.getLoginTypeList(loginTypeArray);
+                        View otherLoginTip = findViewById(R.id.other_login_tip);
+                        if (otherLoginTip != null) {
+                            otherLoginTip.setVisibility(View.VISIBLE);
+                        }
+                    }
+                    TextView loginTipTextView = findViewById(R.id.login_tip);
+                    final ImageView ivSelect = findViewById(R.id.iv_select);
+                    ivSelect.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            selectXieyi = !selectXieyi;
+                            ivSelect.setImageResource(selectXieyi?R.mipmap.group_select_click:R.mipmap.group_select);
+                        }
+                    });
+                    if (loginTipTextView != null) {
+                        JSONObject loginInfo = obj.getJSONObject("login_alert");
+                        String loginTip = loginInfo.getString("login_title");
+                        if (TextUtils.isEmpty(loginTip)) {
+                            return;
+                        }
+                        SpannableString spannableString = new SpannableString(loginTip);
+                        JSONArray msgArray = JSON.parseArray(loginInfo.getString("message"));
+                        for (int i = 0, size = msgArray.size(); i < size; i++) {
+                            final JSONObject msgItem = msgArray.getJSONObject(i);
+                            String title = msgItem.getString("title");
+                            int startIndex = loginTip.indexOf(title);
+                            if (startIndex >= 0) {
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+
+                                    @Override
+                                    public void updateDrawState(TextPaint ds) {
+                                        super.updateDrawState(ds);
+                                        ds.setColor(0xff3399ee);
+                                        ds.setUnderlineText(false);
+                                    }
+
+                                    @Override
+                                    public void onClick(View widget) {
+                                        WebViewActivity.forward(mContext, msgItem.getString("url"), false);
+                                    }
+                                };
+                                int endIndex = startIndex + title.length();
+                                spannableString.setSpan(clickableSpan, startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+                        }
+                        loginTipTextView.setText(spannableString);
+                        loginTipTextView.setMovementMethod(LinkMovementMethod.getInstance());//不设置 没有点击事件
+                        loginTipTextView.setHighlightColor(Color.TRANSPARENT); //设置点击后的颜色为透明
+                    }
+                }
+            }
+        });
         mEditPhone = (EditText) findViewById(R.id.edit_phone);
         mEditCode = (EditText) findViewById(R.id.edit_code);
         mEditPwd1 = (EditText) findViewById(R.id.edit_pwd_1);
@@ -149,7 +233,11 @@ public class RegisterActivity extends AbsActivity {
             getCode();
 
         } else if (i == R.id.btn_register) {
-            register();
+            if(!selectXieyi){
+                ToastUtil.show("请勾选服务协议和隐私政策");
+            }else{
+                register();
+            }
 
         }
     }

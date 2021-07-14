@@ -20,6 +20,12 @@ import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
+import com.qq.e.ads.cfg.VideoOption;
+import com.qq.e.ads.nativ.ADSize;
+import com.qq.e.ads.nativ.NativeExpressAD;
+import com.qq.e.ads.nativ.NativeExpressADView;
+import com.qq.e.ads.nativ.NativeExpressMediaListener;
+import com.qq.e.comm.util.AdError;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
 import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack;
@@ -64,7 +70,7 @@ import cn.wu1588.video.http.VideoHttpUtil;
 import cn.wu1588.video.utils.VideoStorge;
 
 public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements View.OnClickListener,
-        OnItemClickListener<VideoWithAds> {
+        OnItemClickListener<VideoWithAds>, NativeExpressMediaListener {
 
 
     private View mLayoutHeadView;
@@ -82,6 +88,9 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private TTAdNative mTTAdNative;
+    private NativeExpressADView nativeExpressADView;
+    private NativeExpressADView adtiepian;
+    private NativeExpressAD nativeExpressAD;
 
     public static void forward(Context context, VideoBean videoBean) {
         Intent intent = new Intent(context, VideoLongDetailsActivity.class);
@@ -203,17 +212,18 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
             @Override
             public List<VideoWithAds> processData(String[] info) {
                 List<VideoBean> infolist = JsonUtil.getJsonToList(Arrays.toString(info), VideoBean.class);
+                List<VideoWithAds> processList = new ArrayList<>();
                 if (infolist != null && !infolist.isEmpty()) {
                     for (VideoBean videoBean : infolist) {
                         VideoWithAds videoWithAds = new VideoWithAds();
                         videoWithAds.videoBean = videoBean;
                         videoWithAds.itemType = VideoWithAds.ITEM_TYPE_SHORT_VIDEO;
-                        list.add(videoWithAds);
+                        processList.add(videoWithAds);
                     }
                     VideoStorge.getInstance().put("TAG", infolist);
                 }
 
-                return list;
+                return processList;
 
             }
 
@@ -226,9 +236,14 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
                 int space = 5;
                 int size = list.size();
                 String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
-                if(TextUtils.equals(stringValue,"1")){
+                String qqValue = SpUtil.getInstance().getStringValue(SpUtil.QQAD);
+                boolean loadAd = TextUtils.equals(stringValue, "1");
+                boolean loadQQAd = TextUtils.equals(qqValue, "1");
+                if(loadAd || loadQQAd){
                     for (int i = 0; i < size; i += space) {
-                        if (i != 0 && i % space == 0) {
+                        if(i !=0 && i%10 ==0){
+                            loadqqad(i);
+                        }else if (i != 0 && i % space == 0) {
                             loadListAd(space, i);
                         }
                         if(i==0){
@@ -246,12 +261,18 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
             @Override
             public void onLoadMoreSuccess(List<VideoWithAds> loadItemList, int loadItemCount) {
                 String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+                String qqValue = SpUtil.getInstance().getStringValue(SpUtil.QQAD);
+                boolean loadAd = TextUtils.equals(stringValue, "1");
+                boolean loadQQAd = TextUtils.equals(qqValue, "1");
                 if(TextUtils.equals(stringValue,"1")){
                     int space =  5;
                     int size = loadItemList.size();
                     for (int i = 0; i < size; i += space) {
-                        int position = mAdapter.getList().indexOf(loadItemList.get(i));
-                        if (i != 0 && i % space == 0) {
+                        List<VideoWithAds> list = mAdapter.getList();
+                        int position = list.indexOf(loadItemList.get(i));
+                        if(i%10 ==0){
+                            loadqqad(position);
+                        }else if (i % space == 0) {
                             loadListAd(space, position);
                         }
                     }
@@ -281,7 +302,7 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
                 code = "946111197";
                 expressViewHeight = 0;
             }else{
-                code = "946127514";
+                code = "946319381";
             }
         }
         //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
@@ -330,28 +351,15 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
             ad.render();
         }
         mAdapter.notifyDataSetChanged();
+    }
 
-       /* ad.setExpressInteractionListener(new TTNativeExpressAd.ExpressAdInteractionListener() {
-            @Override
-            public void onAdClicked(View view, int type) {
-            }
-
-            @Override
-            public void onAdShow(View view, int type) {
-            }
-
-            @Override
-            public void onRenderFail(View view, String msg, int code) {
-            }
-
-            @Override
-            public void onRenderSuccess(View view, float width, float height) {
-                //返回view的宽高 单位 dp
-                Log.e(TAG, "onRenderSuccess: " + width + ":" + height);
-            }
-        });
-        ad.render();*/
-
+    private void bindAdListener(NativeExpressADView nativeExpressADView,int position){
+        VideoWithAds videoWithAds = new VideoWithAds();
+        videoWithAds.qqAd = nativeExpressADView;
+        videoWithAds.itemType = VideoWithAds.ITEM_TYPE_QQAD;
+        List<VideoWithAds> adapterList = mAdapter.getList();
+        adapterList.add(position, videoWithAds);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void play() {
@@ -409,6 +417,7 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
                     @Override
                     public void onAutoComplete(String url, Object... objects) {
                         super.onAutoComplete(url, objects);
+                        refreshAd();
                     }
 
                     @Override
@@ -560,6 +569,134 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
 
     }
 
+    private static final String TAG = "VideoLongDetailsActivit";
+
+    private void refreshAd() {
+        NativeExpressAD nativeExpressAD = new NativeExpressAD(this, new ADSize(ADSize.FULL_WIDTH, ADSize.AUTO_HEIGHT), "5012306622776455", new NativeExpressAD.NativeExpressADListener() {
+            @Override
+            public void onADLoaded(List<NativeExpressADView> list) {
+                // 3.返回数据后，SDK 会返回可以用于展示 NativeExpressADView 列表
+                adtiepian = list.get(0);
+                adtiepian.render();
+                adtiepian.setMediaListener(VideoLongDetailsActivity.this);
+                mVideoView.addView(adtiepian);
+            }
+
+            @Override
+            public void onRenderFail(NativeExpressADView nativeExpressADView) {
+                Log.i(TAG, "onRenderFail");
+            }
+
+            @Override
+            public void onRenderSuccess(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADExposure(NativeExpressADView nativeExpressADView) {
+                Log.i(TAG, "onADExposure");
+            }
+
+            @Override
+            public void onADClicked(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADClosed(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADLeftApplication(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADOpenOverlay(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADCloseOverlay(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onNoAD(AdError adError) {
+                Log.e("AD_DEMO", String.format("onADError, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
+            }
+        }); // 传入Activity
+        // 注意：如果您在平台上新建平台模板广告位时，选择了支持视频，那么可以进行个性化设置（可选）
+
+
+        nativeExpressAD.loadAD(1);
+        nativeExpressAD.setVideoOption(new VideoOption.Builder()
+                .setAutoPlayPolicy(VideoOption.AutoPlayPolicy.WIFI) // WIFI 环境下可以自动播放视频
+                .setAutoPlayMuted(false)
+                .build()); //
+    }
+
+    private void loadqqad(final int i) {
+        // 传入Activity
+        NativeExpressAD nativeExpressAD = new NativeExpressAD(this, new ADSize(ADSize.FULL_WIDTH, ADSize.AUTO_HEIGHT), "7042700692772687", new NativeExpressAD.NativeExpressADListener() {
+                @Override
+                public void onADLoaded(List<NativeExpressADView> list) {
+                    // 3.返回数据后，SDK 会返回可以用于展示 NativeExpressADView 列表
+                    NativeExpressADView qqad = list.get(0);
+                    bindAdListener(qqad,i);
+                    qqad.render();
+                }
+
+                @Override
+                public void onRenderFail(NativeExpressADView nativeExpressADView) {
+                    Log.i(TAG, "onRenderFail");
+                }
+
+                @Override
+                public void onRenderSuccess(NativeExpressADView nativeExpressADView) {
+
+                }
+
+                @Override
+                public void onADExposure(NativeExpressADView nativeExpressADView) {
+                    Log.i(TAG, "onADExposure");
+                }
+
+                @Override
+                public void onADClicked(NativeExpressADView nativeExpressADView) {
+
+                }
+
+                @Override
+                public void onADClosed(NativeExpressADView nativeExpressADView) {
+
+                }
+
+                @Override
+                public void onADLeftApplication(NativeExpressADView nativeExpressADView) {
+
+                }
+
+                @Override
+                public void onADOpenOverlay(NativeExpressADView nativeExpressADView) {
+
+                }
+
+                @Override
+                public void onADCloseOverlay(NativeExpressADView nativeExpressADView) {
+
+                }
+
+                @Override
+                public void onNoAD(AdError adError) {
+                    Log.e("AD_DEMO", String.format("onADError, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
+                }
+            });
+        // 注意：如果您在平台上新建平台模板广告位时，选择了支持视频，那么可以进行个性化设置（可选）
+
+        nativeExpressAD.loadAD(1);
+    }
 
     public void loadData() {
         if (!isFirstLoadData) {
@@ -631,12 +768,6 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
      */
     public void openGiftWindow() {
         LiveGiftDialogFragment fragment = new LiveGiftDialogFragment();
-        /*fragment.setLifeCycleListener(this);
-        fragment.setLiveGuardInfo(mLiveGuardInfo);
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.LIVE_UID, mLiveUid);
-        bundle.putString(Constants.LIVE_STREAM, mStream);
-        fragment.setArguments(bundle);*/
         fragment.show(getSupportFragmentManager(), "LiveGiftDialogFragment");
     }
 
@@ -743,4 +874,54 @@ public class VideoLongDetailsActivity extends AbsVideoPlayActivity implements Vi
     }
 
 
+    @Override
+    public void onVideoInit(NativeExpressADView nativeExpressADView) {
+
+    }
+
+    @Override
+    public void onVideoLoading(NativeExpressADView nativeExpressADView) {
+
+    }
+
+    @Override
+    public void onVideoCached(NativeExpressADView nativeExpressADView) {
+
+    }
+
+    @Override
+    public void onVideoReady(NativeExpressADView nativeExpressADView, long l) {
+
+    }
+
+    @Override
+    public void onVideoStart(NativeExpressADView nativeExpressADView) {
+
+    }
+
+    @Override
+    public void onVideoPause(NativeExpressADView nativeExpressADView) {
+
+    }
+
+    @Override
+    public void onVideoComplete(NativeExpressADView nativeExpressADView) {
+        mVideoView.removeView(adtiepian);
+        refreshAd();
+    }
+
+    @Override
+    public void onVideoError(NativeExpressADView nativeExpressADView, AdError adError) {
+
+    }
+
+    @Override
+    public void onVideoPageOpen(NativeExpressADView nativeExpressADView) {
+
+    }
+
+    @Override
+    public void onVideoPageClose(NativeExpressADView nativeExpressADView) {
+
+    }
 }

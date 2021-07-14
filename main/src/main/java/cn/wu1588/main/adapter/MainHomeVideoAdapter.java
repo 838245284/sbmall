@@ -76,8 +76,8 @@ public class MainHomeVideoAdapter extends RefreshAdapter<VideoWithAds> {
             return new Vh(mInflater.inflate(R.layout.item_main_home_video, parent, false));
         } else if (viewType == VideoWithAds.ITEM_TYPE_LONG_VIDEO) {
             return new VideoLongVh(mInflater.inflate(R.layout.item_main_home_video_long, parent, false));
-        }else if (viewType == VideoWithAds.ITEM_TYPE_Ads) {
-            return new VideoAdVh(mInflater.inflate(R.layout.listitem_ad_native_express, parent, false));
+        }else if (viewType == VideoWithAds.ITEM_TYPE_Ads||viewType == VideoWithAds.ITEM_TYPE_QQAD) {
+            return new VideoAdVh(mInflater.inflate(R.layout.listitem_ad_native_express, parent, false),viewType);
         }
         return new Vh(mInflater.inflate(R.layout.item_main_home_video, parent, false));
     }
@@ -236,24 +236,32 @@ public class MainHomeVideoAdapter extends RefreshAdapter<VideoWithAds> {
     class VideoAdVh extends RecyclerView.ViewHolder{
 
         private ViewGroup videoView;
+        private int viewType;
 
-        public VideoAdVh(View itemView) {
+        public VideoAdVh(View itemView, int viewType) {
             super(itemView);
             videoView =  itemView.findViewById(R.id.iv_listitem_express);
+            this.viewType = viewType;
         }
 
         void setData(VideoWithAds bean, int position) {
-            bindData(itemView, this, bean.ad,position);
-            if (videoView != null) {
-                //获取视频播放view,该view SDK内部渲染，在媒体平台可配置视频是否自动播放等设置。
-                View video = bean.ad.getExpressAdView();
-                if (video != null) {
-                    videoView.removeAllViews();
-                    if (video.getParent() == null) {
-                        videoView.addView(video);
+            if(viewType==VideoWithAds.ITEM_TYPE_Ads){
+                bindData(itemView, this, bean.ad,position);
+                if (videoView != null) {
+                    //获取视频播放view,该view SDK内部渲染，在媒体平台可配置视频是否自动播放等设置。
+                    View video = bean.ad.getExpressAdView();
+                    if (video != null) {
+                        videoView.removeAllViews();
+                        if (video.getParent() == null) {
+                            videoView.addView(video);
 //                            ad.render();
+                        }
                     }
                 }
+            }else if(viewType == VideoWithAds.ITEM_TYPE_QQAD){
+                bean.qqAd.render();
+                videoView.removeAllViews();
+                videoView.addView(bean.qqAd);
             }
         }
     }

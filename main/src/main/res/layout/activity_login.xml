@@ -14,22 +14,35 @@
         app:ri_ratio="2.2666667" />
 
 
-    <TextView
-        android:id="@+id/login_tip"
+    <LinearLayout
+        android:id="@+id/lltip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="6dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
-        android:textColor="@color/gray1"
-        android:textSize="12sp" />
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/iv_select"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/group_select"/>
+        <TextView
+            android:id="@+id/login_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray1"
+            android:textSize="12sp" />
+    </LinearLayout>
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_above="@id/login_tip"
+        android:layout_above="@id/lltip"
         android:layout_centerInParent="true"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"

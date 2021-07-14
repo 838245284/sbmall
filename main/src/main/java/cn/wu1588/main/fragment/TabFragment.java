@@ -20,6 +20,11 @@ import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
+import com.qq.e.ads.nativ.ADSize;
+import com.qq.e.ads.nativ.NativeExpressAD;
+import com.qq.e.ads.nativ.NativeExpressADView;
+import com.qq.e.comm.constants.AdPatternType;
+import com.qq.e.comm.util.AdError;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,6 +43,7 @@ import cn.wu1588.common.interfaces.OnItemClickListener;
 import cn.wu1588.common.utils.DensityUtils;
 import cn.wu1588.common.utils.DpUtil;
 import cn.wu1588.common.utils.JsonUtil;
+import cn.wu1588.common.utils.RandomUtil;
 import cn.wu1588.common.utils.SpUtil;
 import cn.wu1588.main.R;
 import cn.wu1588.main.adapter.MainHomeVideoAdapter;
@@ -79,6 +85,7 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
     private Context context;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private TTAdNative mTTAdNative;
+    private boolean loadqqad = true;
 
     public static TabFragment newInstance(String label) {
         Bundle args = new Bundle();
@@ -166,12 +173,22 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
                 }
                 VideoStorge.getInstance().put(String.valueOf(index), adsToVideo(list));
                 String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
-                if (TextUtils.equals(stringValue, "1")) {
+                String qqad = SpUtil.getInstance().getStringValue(SpUtil.QQAD);
+                boolean loadAd = TextUtils.equals(stringValue, "1");
+                boolean loadQQad = TextUtils.equals(qqad, "1");
+                if (loadAd || loadQQad) {
                     int space = list.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
                     int size = list.size();
                     for (int i = 0; i <= size; i += space) {
                         if (i != 0 && i % space == 0) {
-                            loadListAd(space, i);
+//                            loadListAd(space, i);
+                            if(loadAd && loadQQad){
+                                refreshAd(i,space);
+                            }else if(loadAd){
+                                loadListAd(space, i);
+                            }else {
+                                refreshAd(i,space);
+                            }
                         }
                     }
                 }
@@ -188,14 +205,40 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
                 beans.addAll(adsToVideo(loadItemList));
                 VideoStorge.getInstance().put(String.valueOf(index), beans);
                 String stringValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
-                if(TextUtils.equals(stringValue,"1")){
+                String qqValue = SpUtil.getInstance().getStringValue(SpUtil.QQAD);
+                if(TextUtils.equals(stringValue,"1")&&"1".equals(qqValue)){
                     int space = loadItemList.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
                     int size = loadItemList.size();
                     for (int i = 0; i <= size; i += space) {
                         List<VideoWithAds> list = mAdapter.getList();
                         int position = i<size? list.indexOf(loadItemList.get(i)):-1;
                         if (i != 0 && i % space == 0) {
-                            loadListAd(space, position);
+                            loadqqad = !loadqqad;
+                            if(loadqqad){
+                                refreshAd(position,space);
+                            }else{
+                                loadListAd(space, position);
+                            }
+                        }
+                    }
+                }else if(TextUtils.equals(stringValue,"1")&&!"1".equals(qqValue)){
+                    int space = loadItemList.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
+                    int size = loadItemList.size();
+                    for (int i = 0; i <= size; i += space) {
+                        List<VideoWithAds> list = mAdapter.getList();
+                        int position = i<size? list.indexOf(loadItemList.get(i)):-1;
+                        if (i != 0 && i % space == 0) {
+                                loadListAd(space, position);
+                        }
+                    }
+                }else if(!TextUtils.equals(stringValue,"1")&&"1".equals(qqValue)){
+                    int space = loadItemList.get(0).itemType == VideoWithAds.ITEM_TYPE_SHORT_VIDEO ? 10 : 5;
+                    int size = loadItemList.size();
+                    for (int i = 0; i <= size; i += space) {
+                        List<VideoWithAds> list = mAdapter.getList();
+                        int position = i<size? list.indexOf(loadItemList.get(i)):-1;
+                        if (i != 0 && i % space == 0) {
+                            refreshAd(position,space);
                         }
                     }
                 }
@@ -251,6 +294,83 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
         //step3:(可选，强烈建议在合适的时机调用):申请部分权限，如read_phone_state,防止获取不了imei时候，下载类广告没有填充的问题。
         TTAdSdk.getAdManager().requestPermissionIfNecessary(context);
     }
+    private void refreshAd(final int position,int type) {
+        int expressViewWidth;
+        int expressViewHeight;
+        if (type == 10) {
+            expressViewWidth = DensityUtils.getScreenWdp(context) / 2 - 12;
+            expressViewHeight = (int) (expressViewWidth * 16f / 9 + 7);
+        } else {
+            expressViewWidth = DensityUtils.getScreenWdp(context);
+            expressViewHeight = (int) (expressViewWidth * 3f / 4);
+        }
+        NativeExpressAD nativeExpressAD = new NativeExpressAD(getActivity(), new ADSize(DensityUtils.getScreenWdp(context)/2+10, ADSize.AUTO_HEIGHT), "2022505652179259", new NativeExpressAD.NativeExpressADListener() {
+            @Override
+            public void onADLoaded(List<NativeExpressADView> list) {
+                // 3.返回数据后，SDK 会返回可以用于展示 NativeExpressADView 列表
+                NativeExpressADView nativeExpressADView = list.get(0);
+                if (nativeExpressADView.getBoundData().getAdPatternType() == AdPatternType.NATIVE_VIDEO) {
+//                    nativeExpressADView.setMediaListener(mediaListener);
+                }
+                nativeExpressADView.render();
+                bindAdListener(nativeExpressADView,position);
+            }
+
+            @Override
+            public void onRenderFail(NativeExpressADView nativeExpressADView) {
+                Log.i(TAG, "onRenderFail");
+            }
+
+            @Override
+            public void onRenderSuccess(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADExposure(NativeExpressADView nativeExpressADView) {
+                Log.i(TAG, "onADExposure");
+            }
+
+            @Override
+            public void onADClicked(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADClosed(NativeExpressADView nativeExpressADView) {
+                mAdapter.getList().remove(position);
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onADLeftApplication(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADOpenOverlay(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADCloseOverlay(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onNoAD(AdError adError) {
+                Log.e("AD_DEMO", String.format("onADError, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
+            }
+        }); // 传入Activity
+        // 注意：如果您在平台上新建平台模板广告位时，选择了支持视频，那么可以进行个性化设置（可选）
+
+
+        nativeExpressAD.loadAD(1);
+       /* nativeExpressAD.setVideoOption(new VideoOption.Builder()
+                .setAutoPlayPolicy(VideoOption.AutoPlayPolicy.WIFI) // WIFI 环境下可以自动播放视频
+                .setAutoPlayMuted(true)
+                .build()); //*/
+    }
 
     private void loadListAd(int type, final int position) {
         float expressViewWidth;
@@ -300,40 +420,50 @@ public class TabFragment extends Fragment implements OnItemClickListener<VideoWi
             videoWithAds.ad = ad;
             videoWithAds.itemType = VideoWithAds.ITEM_TYPE_Ads;
             List<VideoWithAds> adapterList = mAdapter.getList();
+            VideoBean element = new VideoBean();
+            element.setThumb(getValidateThub());
             if(position>0){
                 adapterList.add(position, videoWithAds);
-                beans.add(position, new VideoBean());
+                beans.add(position, element);
             }else{
                 adapterList.add(videoWithAds);
-                beans.add(new VideoBean());
+                beans.add(element);
             }
 
             ad.render();
         }
         VideoStorge.getInstance().put(index, beans);
         mAdapter.notifyDataSetChanged();
+    }
 
-       /* ad.setExpressInteractionListener(new TTNativeExpressAd.ExpressAdInteractionListener() {
-            @Override
-            public void onAdClicked(View view, int type) {
+    private String getValidateThub() {
+        while (true) {
+            List<VideoWithAds> list = mAdapter.getList();
+            int i = RandomUtil.nextInt(list.size());
+            VideoBean bean = list.get(i).videoBean;
+            if(bean!=null && !TextUtils.isEmpty(bean.getThumb())){
+                return bean.getThumb();
             }
+        }
+    }
 
-            @Override
-            public void onAdShow(View view, int type) {
-            }
-
-            @Override
-            public void onRenderFail(View view, String msg, int code) {
-            }
-
-            @Override
-            public void onRenderSuccess(View view, float width, float height) {
-                //返回view的宽高 单位 dp
-                Log.e(TAG, "onRenderSuccess: " + width + ":" + height);
-            }
-        });
-        ad.render();*/
-
+    private void bindAdListener(NativeExpressADView nativeExpressADView,int position){
+        List<VideoBean> beans = VideoStorge.getInstance().get(index);
+        VideoWithAds videoWithAds = new VideoWithAds();
+        videoWithAds.qqAd = nativeExpressADView;
+        videoWithAds.itemType = VideoWithAds.ITEM_TYPE_QQAD;
+        List<VideoWithAds> adapterList = mAdapter.getList();
+        VideoBean element = new VideoBean();
+        element.setThumb(getValidateThub());
+        if(position>0){
+            adapterList.add(position, videoWithAds);
+            beans.add(position, element);
+        }else{
+            adapterList.add(videoWithAds);
+            beans.add(element);
+        }
+        VideoStorge.getInstance().put(index, beans);
+        mAdapter.notifyDataSetChanged();
     }
 
 
