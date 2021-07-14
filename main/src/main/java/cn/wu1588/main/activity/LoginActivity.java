@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
@@ -27,6 +28,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Arrays;
+import java.util.List;
+
 import cn.wu1588.common.CommonAppConfig;
 import cn.wu1588.common.CommonAppContext;
 import cn.wu1588.common.Constants;
@@ -52,12 +61,6 @@ import cn.wu1588.main.event.RegSuccessEvent;
 import cn.wu1588.main.http.MainHttpConsts;
 import cn.wu1588.main.http.MainHttpUtil;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
-
 
 /**
  * Created by cxf on 2018/9/17.
@@ -74,7 +77,10 @@ public class LoginActivity extends AbsActivity implements OnItemClickListener<Mo
     private RecyclerView mRecyclerView;
     private MobLoginUtil mLoginUtil;
     private boolean mFirstLogin;//是否是第一次登录
+    private boolean selectXieyi;//是否是第一次登录
     private String mLoginType = Constants.MOB_PHONE;//登录方式
+    private JSONObject loginInfo;
+    private String loginTip;
 
     @Override
     protected int getLayoutId() {
@@ -157,9 +163,17 @@ public class LoginActivity extends AbsActivity implements OnItemClickListener<Mo
                         mLoginUtil = new MobLoginUtil();
                     }
                     TextView loginTipTextView = findViewById(R.id.login_tip);
+                    final ImageView ivSelect = findViewById(R.id.iv_select);
+                    ivSelect.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            selectXieyi = !selectXieyi;
+                            ivSelect.setImageResource(selectXieyi?R.mipmap.group_select_click:R.mipmap.group_select);
+                        }
+                    });
                     if (loginTipTextView != null) {
-                        JSONObject loginInfo = obj.getJSONObject("login_alert");
-                        String loginTip = loginInfo.getString("login_title");
+                        loginInfo = obj.getJSONObject("login_alert");
+                        loginTip = loginInfo.getString("login_title");
                         if (TextUtils.isEmpty(loginTip)) {
                             return;
                         }
@@ -207,7 +221,11 @@ public class LoginActivity extends AbsActivity implements OnItemClickListener<Mo
     public void loginClick(View v) {
         int i = v.getId();
         if (i == R.id.btn_login) {
-            login();
+            if(!selectXieyi){
+                ToastUtil.show("请勾选服务协议和隐私政策");
+            }else{
+                login();
+            }
 
         } else if (i == R.id.btn_register) {
             register();
@@ -220,7 +238,10 @@ public class LoginActivity extends AbsActivity implements OnItemClickListener<Mo
 
     //注册
     private void register() {
-        startActivity(new Intent(mContext, RegisterActivity.class));
+        Intent intent = new Intent(mContext, RegisterActivity.class);
+        intent.putExtra("loginInfo",loginInfo);
+        intent.putExtra("loginTip",loginTip);
+        startActivity(intent);
     }
 
     //忘记密码
@@ -315,6 +336,7 @@ public class LoginActivity extends AbsActivity implements OnItemClickListener<Mo
         MainHttpUtil.loginByThird(data.getOpenID(), data.getNickName(), data.getAvatar(), data.getType(), new HttpCallback() {
             @Override
             public void onSuccess(int code, String msg, String[] info) {
+                Log.e("TAG", "onSuccess: "+ Arrays.toString(info));
                 onLoginSuccess(code, msg, info);
             }
         });
@@ -322,6 +344,10 @@ public class LoginActivity extends AbsActivity implements OnItemClickListener<Mo
 
     @Override
     public void onItemClick(MobBean bean, int position) {
+        if(!selectXieyi){
+            ToastUtil.show("请勾选服务协议和隐私政策");
+            return;
+        }
         if (mLoginUtil == null) {
             return;
         }

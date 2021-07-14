@@ -41,6 +41,6 @@ dependencies {
     compile project(':beauty')
 
     implementation 'com.shuyu:GSYVideoPlayer:6.0.3'
-
+    implementation 'com.qq.e.union:union:+'
     implementation 'com.pangle.cn:ads-sdk:3.5.0.6'
 }

@@ -5,21 +5,21 @@
 	<QQ
 		Id="7"
 		SortId="7"
-		AppId="1109063367"
-		AppKey="z0fhySwwZ45GW4yI"
+		AppId="1111762892"
+		AppKey="TV9XkwkxhPNpI0QA"
 		ShareByAppClient="true"
 		Enable="true" />
     <QZone
         Id="3"
         SortId="3"
-        AppId="1011222"
-        AppKey="075999fa85a99ba1417166e73b80"
+        AppId="1111762892"
+        AppKey="TV9XkwkxhPNpI0QA"
         Enable="true" />
     <Wechat
         Id="4"
         SortId="4"
-        AppId="wxb6321432a74b5173"
-        AppSecret="547b2b7e766f89c1a3f859dad9ce3922"
+        AppId="wx21fb0e3b0433eded"
+        AppSecret="e89d357d10d9fc1d74d80dc1c207b8ce"
 		userName="gh_afb2019c9"
 		path="/page/API/pages/share/share"
         BypassApproval="false"

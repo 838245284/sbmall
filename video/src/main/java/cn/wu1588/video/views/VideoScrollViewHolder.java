@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,11 @@ import com.bytedance.sdk.openadsdk.AdSlot;
 import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
+import com.qq.e.ads.cfg.VideoOption;
+import com.qq.e.ads.nativ.ADSize;
+import com.qq.e.ads.nativ.NativeExpressAD;
+import com.qq.e.ads.nativ.NativeExpressADView;
+import com.qq.e.comm.util.AdError;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -79,6 +85,8 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
     SparseArray<View> adViewMap = new SparseArray<>();
     private View llybot;
     private String adValue;
+    private NativeExpressADView qqad;
+    private String qqadValue;
 
     public VideoScrollViewHolder(Context context, ViewGroup parentView, int position, String videoKey, int page) {
         super(context, parentView, position, videoKey, page);
@@ -105,11 +113,16 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
         List<VideoWithAds> adsList = convertList(list);
         mVideoScrollAdapter = new VideoScrollAdapter(mContext, adsList, mPosition);
         initAds();
+
         adValue = SpUtil.getInstance().getStringValue(SpUtil.AD);
+        qqadValue = SpUtil.getInstance().getStringValue(SpUtil.QQAD);
         if (TextUtils.equals(adValue, "1")) {
             for (int i = 0; i < 3; i++) {
                 loadAds(i);
             }
+        }
+        if (TextUtils.equals(qqadValue, "1")) {
+            refreshAd();
         }
         llybot = findViewById(R.id.llybot);
         mVideoPlayViewHolder = new VideoPlayViewHolder(mContext, null);
@@ -179,18 +192,22 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
                 mVideoBean = getValidateVideoBean();
             }
             mVideoPlayWrapViewHolder = videoPlayWrapViewHolder;
-            if (TextUtils.equals(adValue, "1") && scrollIndex % 7 == 0 && !adList.isEmpty()) {
-                View view = adViewMap.get(scrollIndex);
+            boolean loadAd = TextUtils.equals(adValue, "1") && !adList.isEmpty() ;
+            boolean loadQQAd = TextUtils.equals(qqadValue, "1") && !qqAdList.isEmpty() ;
+            if ((loadAd||loadQQAd) && scrollIndex % 7 == 0) {
                 llybot.setVisibility(View.GONE);
                 mVideoLoadingBar.setVisibility(View.GONE);
                 videoPlayWrapViewHolder.showAd(true);
-                if (view != null) {
-                    videoPlayWrapViewHolder.addVideoView(view);
-                } else {
-                    int i = RandomUtil.nextInt(adList.size());
-                    View expressAdView = adList.get(i).getExpressAdView();
-                    adViewMap.put(scrollIndex, expressAdView);
-                    videoPlayWrapViewHolder.addVideoView(expressAdView);
+                if(loadAd && loadQQAd){
+                    if(scrollIndex % 14 ==0){
+                        showQQad(videoPlayWrapViewHolder);
+                    }else{
+                        showCsjAd(videoPlayWrapViewHolder, scrollIndex);
+                    }
+                }else if(loadAd){
+                    showCsjAd(videoPlayWrapViewHolder, scrollIndex);
+                }else {
+                    showQQad(videoPlayWrapViewHolder);
                 }
             } else {
                 llybot.setVisibility(View.VISIBLE);
@@ -213,11 +230,38 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
         }
     }
 
+    private void showCsjAd(VideoPlayWrapViewHolder videoPlayWrapViewHolder, int scrollIndex) {
+        View view = adViewMap.get(scrollIndex);
+        if (view != null) {
+            videoPlayWrapViewHolder.addVideoView(view);
+        } else {
+            int i = RandomUtil.nextInt(adList.size());
+            View expressAdView = adList.get(i).getExpressAdView();
+            adViewMap.put(scrollIndex, expressAdView);
+            videoPlayWrapViewHolder.addVideoView(expressAdView);
+        }
+    }
+
+    private void showQQad(VideoPlayWrapViewHolder videoPlayWrapViewHolder) {
+        int i = RandomUtil.nextInt(qqAdList.size());
+        NativeExpressADView qq = qqAdList.get(i);
+        qq.render();
+        videoPlayWrapViewHolder.addVideoView(qq);
+    }
+
     private VideoBean getValidateVideoBean() {
+        for (int i = 0; i < list.size(); i++) {
+            VideoBean bean = list.get(i);
+            String href = bean.getHref();
+            if(TextUtils.equals(mVideoBean.getThumb(),bean.getThumb())&& !TextUtils.isEmpty(href)){
+                return list.get(i);
+            }
+        }
         while (true) {
             int i = RandomUtil.nextInt(list.size());
             VideoBean bean = list.get(i);
             String href = bean.getHref();
+            if(TextUtils.equals(mVideoBean.getThumb(),bean.getThumb())){}
             if (!TextUtils.isEmpty(href)) {
                 return list.get(i);
             }
@@ -477,5 +521,74 @@ public class VideoScrollViewHolder extends AbsViewHolder implements
         mTTAdNative = TTAdSdk.getAdManager().createAdNative(mContext);
         //step3:(可选，强烈建议在合适的时机调用):申请部分权限，如read_phone_state,防止获取不了imei时候，下载类广告没有填充的问题。
         TTAdSdk.getAdManager().requestPermissionIfNecessary(mContext);
+    }
+
+    private List<NativeExpressADView> qqAdList = new ArrayList<>();
+
+    private void refreshAd() {
+        int expressViewWidth = DensityUtils.getScreenW(mContext);
+        int expressViewHeight = DensityUtils.getScreenH(mContext);
+        NativeExpressAD nativeExpressAD = new NativeExpressAD(mContext, new ADSize(expressViewWidth, expressViewHeight), "2022505652179259", new NativeExpressAD.NativeExpressADListener() {
+
+
+            @Override
+            public void onADLoaded(List<NativeExpressADView> list) {
+                // 3.返回数据后，SDK 会返回可以用于展示 NativeExpressADView 列表
+                /*qqad = list.get(0);
+                qqad.render();*/
+                qqAdList.addAll(list);
+            }
+
+            @Override
+            public void onRenderFail(NativeExpressADView nativeExpressADView) {
+            }
+
+            @Override
+            public void onRenderSuccess(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADExposure(NativeExpressADView nativeExpressADView) {
+            }
+
+            @Override
+            public void onADClicked(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADClosed(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADLeftApplication(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADOpenOverlay(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onADCloseOverlay(NativeExpressADView nativeExpressADView) {
+
+            }
+
+            @Override
+            public void onNoAD(AdError adError) {
+                Log.e("AD_DEMO", String.format("onADError, error code: %d, error msg: %s", adError.getErrorCode(), adError.getErrorMsg()));
+            }
+        }); // 传入Activity
+        // 注意：如果您在平台上新建平台模板广告位时，选择了支持视频，那么可以进行个性化设置（可选）
+
+
+        nativeExpressAD.loadAD(10);
+        nativeExpressAD.setVideoOption(new VideoOption.Builder()
+                .setAutoPlayPolicy(VideoOption.AutoPlayPolicy.WIFI) // WIFI 环境下可以自动播放视频
+                .setAutoPlayMuted(false)
+                .build()); //
     }
 }

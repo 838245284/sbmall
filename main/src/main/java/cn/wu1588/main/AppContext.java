@@ -9,6 +9,7 @@ import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.meihu.beautylibrary.MHSDK;
 import com.mob.MobSDK;
 import com.qiniu.pili.droid.shortvideo.PLShortVideoEnv;
+import com.qq.e.comm.managers.GDTADManager;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.live.TXLiveBase;
 
@@ -66,7 +67,7 @@ public class AppContext extends CommonAppContext {
 //        }
         PLShortVideoEnv.init(this);
         initAd();
-
+        GDTADManager.getInstance().initWith(this, "1111789771");
 
     }
 

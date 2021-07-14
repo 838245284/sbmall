@@ -44,7 +44,7 @@ public class MainHttpUtil {
 
     public static void isNeedAd(HttpCallback callback) {
         HttpClient.getInstance().get("Home.query_option", MainHttpConsts.LOGIN)
-                .params("option_name", "ad_power")
+                .params("option_name", "ad_powers")
                 .execute(callback);
 
     }

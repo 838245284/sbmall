@@ -33,6 +33,7 @@ public class SpUtil {
     public static final String TI_BEAUTY_ENABLE = "tiBeautyEnable";
     public static final String BEAUTY_KEY = "beautyKey";
     public static final String AD = "ad";
+    public static final String QQAD = "qqad";
     public static final String BRIGHTNESS = "brightness";//亮度
 
 

@@ -45,5 +45,6 @@ dependencies {
     compile project(':mall')
     compile project(':common')
     implementation 'com.pangle.cn:ads-sdk:3.5.0.6'
+    implementation 'com.qq.e.union:union:+'
     annotationProcessor rootProject.ext.dependencies["arouter-compiler"]
 }
